@@ -1,0 +1,126 @@
+/* Overall container for the login page */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f2f5;
+}
+
+/* Style for the login form */
+.form {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px #0E8388;
+    padding: 40px;
+    display: flex;
+    width: 750px; /* Adjust width as needed */
+}
+
+/* Container for logo and form fields */
+.form-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+/* Styling for side logo */
+.side-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 60px;
+    padding-left: 20px;
+}
+
+.image {
+    width: 350px; /* Adjust size of LogoS as needed */
+    height: auto;
+}
+
+/* Form fields styling */
+.form-fields {
+    flex-grow: 1;
+}
+
+.form-header .header .text {
+    font-size: 24px;
+    color: #0E8388;
+    font-weight: bold;
+}
+.button-container{
+    margin-left: 70px;
+    margin-top: 20px;
+}
+
+.text {
+    font-size: 24px;
+    color: #0E8388;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-left: 75px;
+    position: center;
+}
+.form-header .header .underline {
+    height: 3px;
+    width: 50px;
+    background-color: #0E8388;
+    margin: 0 auto;
+    margin-left: 125px;
+    margin-bottom: 20px;
+}
+
+/* Input styling */
+.inputs .input input {
+    width: 120%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    
+}
+
+/* Error styling */
+.error-message {
+    color: red;
+    margin-top: 10px;
+    margin-left: 50px;
+}
+
+/* Highlight error input field */
+.error-input {
+    border-color: red;
+}
+
+/* Submit button styling */
+.submit-container .submit {
+    width: 100%;
+    padding: 10px;
+    background-color: #0E8388;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.submit-container .submit:hover {
+    background-color: #0B6E6E;
+}
+.image_container1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding-bottom: 20px;
+}
+.image1{
+   
+    width: 250px;
+    height: 100%;
+    position: center;
+    padding-left: 10px;
+    
+}
