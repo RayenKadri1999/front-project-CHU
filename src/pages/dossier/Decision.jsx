@@ -102,7 +102,7 @@ export default function Decision() {
 
             <Box sx={{ m: 1, width: "25ch" }}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label" required>
+                <InputLabel id="demo-simple-select-label"   >
                 Double anti agrégation plaquettaire 
                 </InputLabel>
 
@@ -120,7 +120,7 @@ export default function Decision() {
             </Box>
             <Box sx={{ m: 1, width: "25ch" }}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label" required>
+                <InputLabel id="demo-simple-select-label"   >
                 Anticoagulation curative
                 </InputLabel>
 
@@ -138,7 +138,7 @@ export default function Decision() {
             </Box>
             <div>
               {" "}
-              <TextField required id="outlined-required" label="Thrombolyse IV" />
+              <TextField    id="outlined-required" label="Thrombolyse IV" />
             </div>
 
 
@@ -174,7 +174,7 @@ export default function Decision() {
 
 <Box sx={{ m: 1, width: "25ch" }}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label" required>
+                <InputLabel id="demo-simple-select-label"   >
                 Molécule utilisée
                 </InputLabel>
 
@@ -193,11 +193,11 @@ export default function Decision() {
 
 
             
-              <TextField required id="outlined-required" label="
+              <TextField    id="outlined-required" label="
 Posologie
  " />
           
-              <TextField required id="outlined-required" label="Delai door to neddle" />
+              <TextField    id="outlined-required" label="Delai door to neddle" />
            
               </Box>
 <Box height={10} />

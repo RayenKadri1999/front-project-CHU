@@ -43,8 +43,8 @@ export default function Etiologie({ commonState }) {
   
   const [TOASTData, setTOASTData] = useState({
 
-
-
+  
+   
     athérothrombotique:"non",
     athérothrombotiqueContent:[],
     info:"",
@@ -53,9 +53,7 @@ export default function Etiologie({ commonState }) {
     fibrillation_valvulaire:"",
     fibrillation_type:"",
     fibrillation_anticoagulée:"",
-     AngiopathieAmyloide:"",
-      MalformationArterioveineuse:"",
-
+    
     lacune:"non",
  
     Indeterminé:"non",
@@ -117,21 +115,7 @@ export default function Etiologie({ commonState }) {
       [name]: value,
     }));
   };
-    const cleanData = (data) => {
-        // Create a new object to avoid mutating the original one
-        let cleanedData = { ...data };
-        delete cleanedData._id;
-        delete cleanedData.__v;
-        // Loop through the keys of the data
-        Object.keys(cleanedData).forEach(key => {
-            // Remove fields that have an empty string or are unselected (null or undefined)
-            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
-                delete cleanedData[key];
-            }
-        });
 
-        return cleanedData;
-    };
 
   
  
@@ -351,8 +335,8 @@ const handleSubmitAscod = (e) => {
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
       >
-        <FormControlLabel value="Valvulaire" control={<Radio />} label="Valvulaire"     disabled ={!isEditable } />
-        <FormControlLabel value="Non valvulaire" control={<Radio />} label="Non valvulaire"     disabled ={!isEditable }  />
+        <FormControlLabel value="Valvulaire" control={<Radio />} label="Valvulaire" required disabled ={!isEditable } />
+        <FormControlLabel value="Non valvulaire" control={<Radio />} label="Non valvulaire" required disabled ={!isEditable }  />
       </RadioGroup>
      
 
@@ -366,8 +350,8 @@ const handleSubmitAscod = (e) => {
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
       >
-        <FormControlLabel value="Paroxystique" control={<Radio />} label="Paroxystique"     disabled ={!isEditable } />
-        <FormControlLabel value="Permanente" control={<Radio />} label="Permanente"     disabled  ={!isEditable }  />
+        <FormControlLabel value="Paroxystique" control={<Radio />} label="Paroxystique" required disabled ={!isEditable } />
+        <FormControlLabel value="Permanente" control={<Radio />} label="Permanente" required disabled  ={!isEditable }  />
       </RadioGroup>
 
 
@@ -381,8 +365,8 @@ const handleSubmitAscod = (e) => {
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
       >
-        <FormControlLabel value="Anticoagulée" control={<Radio />} label="Anticoagulée"     disabled ={!isEditable } />
-        <FormControlLabel value="Non anticoagulée" control={<Radio />} label="Non anticoagulée"     disabled ={!isEditable  }  />
+        <FormControlLabel value="Anticoagulée" control={<Radio />} label="Anticoagulée" required disabled ={!isEditable } />
+        <FormControlLabel value="Non anticoagulée" control={<Radio />} label="Non anticoagulée" required disabled ={!isEditable  }  />
       </RadioGroup>
       </>
                            }
@@ -525,9 +509,9 @@ const handleSubmitAscod = (e) => {
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
       >
-        <FormControlLabel value="ESUS" control={<Radio />} label="ESUS:Bilan étiologique négatif"     disabled ={!isEditable } />
-        <FormControlLabel value="2 étiologies identifiés" control={<Radio />} label="2 étiologies identifiés"     disabled ={!isEditable }  />
-        <FormControlLabel value="Bilan non exhaustif" control={<Radio />} label="Bilan non exhaustif"     disabled ={!isEditable}  />
+        <FormControlLabel value="ESUS" control={<Radio />} label="ESUS:Bilan étiologique négatif" required disabled ={!isEditable } />
+        <FormControlLabel value="2 étiologies identifiés" control={<Radio />} label="2 étiologies identifiés" required disabled ={!isEditable }  />
+        <FormControlLabel value="Bilan non exhaustif" control={<Radio />} label="Bilan non exhaustif" required disabled ={!isEditable}  />
 
       </RadioGroup>
 }

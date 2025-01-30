@@ -43,27 +43,13 @@ export default function ConclusionInitiale() {
     
     INR:"",
     Plaquettes: "",
-    Hemoglobine: "",
+    Hémoglobine: "",
     Dosage: "",
     matricule: id,
 
     Conclusion:"",
   });
-    const cleanData = (data) => {
-        // Create a new object to avoid mutating the original one
-        let cleanedData = { ...data };
-        delete cleanedData._id;
-        delete cleanedData.__v;
-        // Loop through the keys of the data
-        Object.keys(cleanedData).forEach(key => {
-            // Remove fields that have an empty string or are unselected (null or undefined)
-            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
-                delete cleanedData[key];
-            }
-        });
 
-        return cleanedData;
-    };
 
 
 
@@ -111,21 +97,21 @@ export default function ConclusionInitiale() {
           </Typography>
             <Grid container spacing={1}>
             <Grid item xs={6}>
-              <TextField     fullWidth type ="number" id="outlined-required" label="ECG  " name="ECG" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ECG}  sx={{ m: 1 }} />
+              <TextField required fullWidth type ="number" id="outlined-required" label="ECG  " name="ECG" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ECG}  sx={{ m: 1 }} />
            
-              <TextField     fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
+              <TextField required fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
            
-              <TextField     fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
+              <TextField required fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
               </Grid>
               <Grid item xs={6}>
-              <TextField     fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}  sx={{ m: 1 }} />
+              <TextField required fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}  sx={{ m: 1 }} />
               
-              <TextField     fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes}  sx={{ m: 1 }} />
+              <TextField required fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes}  sx={{ m: 1 }} />
            
-              <TextField     fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}  sx={{ m: 1 }} />
+              <TextField required fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}  sx={{ m: 1 }} />
               </Grid>
               <Grid item xs={6}>
-              <TextField     fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
+              <TextField required fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
            </Grid>
            </Grid>
 </Box>
