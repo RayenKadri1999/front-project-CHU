@@ -58,7 +58,7 @@ const ListHospitalisation = () => {
   const loadPatientHospitalisation = async (e) => {
     try {
    
-      const result = await axios.get(`http://localhost:3000/api/hospitalisation/getAll/${idDossier}`, { headers: authHeader() });
+      const result = await axios.get(`http://localhost:3000/api/hospitalisation/getAll/${encodeURIComponent(idDossier)}`, { headers: authHeader() });
       setHospitalisations(result.data);
       
 

@@ -65,6 +65,21 @@ export default function BiologieHematome() {
     });
     const [successMessage, setSuccessMessage] = useState("");
     const [error, setError] = useState(null);
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
+
+        return cleanedData;
+    };
     // const [changementRequest, setChangementRequest] = useState({
     //   userId: userId,
     //   status: 'en attente',
@@ -163,7 +178,7 @@ export default function BiologieHematome() {
                         <Typography variant="h6">Biochimie du sang</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 2, mt: 2 }}>
                             <TextField
-                                required
+
                                 name="Sodium"
                                 label="Sodium"
                                 type="number"
@@ -173,7 +188,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mmol/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Potassium"
                                 label="Potassium"
                                 type="number"
@@ -183,7 +198,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mmol/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Urée"
                                 label="Urée"
                                 type="number"
@@ -193,7 +208,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mmol/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Créatinine"
                                 label="Créatinine"
                                 type="number"
@@ -203,7 +218,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mmol/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="CRP"
                                 label="CRP"
                                 type="number"
@@ -213,7 +228,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mg/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="HbA1C"
                                 label="HbA1C"
                                 type="number"
@@ -230,7 +245,7 @@ export default function BiologieHematome() {
                         <Typography variant="h6">Marqueurs cardio-vasculaires</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 2, mt: 2 }}>
                             <TextField
-                                required
+
                                 name="CPK"
                                 label="CPK"
                                 type="number"
@@ -240,7 +255,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">UI/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Myoglobine"
                                 label="Myoglobine"
                                 type="number"
@@ -250,7 +265,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">ng/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Troponine"
                                 label="Troponine"
                                 type="number"
@@ -260,7 +275,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">ng/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="NT_pro_BNP"
                                 label="NT pro BNP"
                                 type="number"
@@ -276,7 +291,7 @@ export default function BiologieHematome() {
                         <Typography variant="h6">Hématologie</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 2, mt: 2 }}>
                             <TextField
-                                required
+
                                 name="VSH1"
                                 label="VSH1"
                                 type="number"
@@ -286,7 +301,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mm</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Hémoglobine"
                                 label="Hémoglobine"
                                 type="number"
@@ -296,7 +311,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">g/dl</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Leucocytes"
                                 label="Leucocytes"
                                 type="number"
@@ -306,7 +321,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">10^9/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Plaquettes"
                                 label="Plaquettes"
                                 type="number"
@@ -316,7 +331,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">10^9/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="D_dimères"
                                 label="D dimères"
                                 type="number"
@@ -326,7 +341,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">µg/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Monomères_de_fbrine"
                                 label="Monomères de fibrine"
                                 type="number"
@@ -336,7 +351,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">µg/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Fibrinogène"
                                 label="Fibrinogène"
                                 type="number"
@@ -346,7 +361,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">g/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="TP"
                                 label="TP"
                                 type="number"
@@ -356,7 +371,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">%</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Ratio_TCA"
                                 label="Ratio TCA"
                                 type="number"
@@ -371,7 +386,7 @@ export default function BiologieHematome() {
                         <Typography variant="h6">Bilan hépatique</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 2, mt: 2 }}>
                             <TextField
-                                required
+
                                 name="ASAT_GOT"
                                 label="ASAT/GOT"
                                 type="number"
@@ -381,7 +396,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">UI/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="ALAT_GPT"
                                 label="ALAT/GPT"
                                 type="number"
@@ -391,7 +406,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">UI/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="GGT"
                                 label="GGT"
                                 type="number"
@@ -401,7 +416,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">UI/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="PAL"
                                 label="PAL"
                                 type="number"
@@ -411,7 +426,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">UI/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Bilirubine_totale"
                                 label="Bilirubine totale"
                                 type="number"
@@ -421,7 +436,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">mg/dl</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Bilirubine_libre"
                                 label="Bilirubine libre"
                                 type="number"
@@ -436,7 +451,7 @@ export default function BiologieHematome() {
                         <Typography variant="h6">Bilan  lipidique</Typography>
                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 2, mt: 2 }}>
                             <TextField
-                                required
+
                                 name="CT_Total"
                                 label="CT-Total"
                                 type="number"
@@ -446,7 +461,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">g/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="TG"
                                 label="TG"
                                 type="number"
@@ -456,7 +471,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">g/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Ldl_Ch"
                                 label="Ldl-ch"
                                 type="number"
@@ -466,7 +481,7 @@ export default function BiologieHematome() {
                                 InputProps={{ endAdornment: <InputAdornment position="end">g/l</InputAdornment> }}
                             />
                             <TextField
-                                required
+
                                 name="Hdl_Ch"
                                 label="Hdl-ch"
                                 type="number"

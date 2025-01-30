@@ -54,7 +54,21 @@ export default function ExamensComplementaires_Hematome({ commonState }) {
 
 
     });
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
 
+        return cleanedData;
+    };
     const handleChangeText = (e) => {
         const { name, value } = e.target;
 

@@ -38,7 +38,7 @@ class ApiServices {
   setSuccessMessage("");
 
   const url = isDataAvailable
-    ? `http://localhost:3000/api/${apiname}/update/${id}`
+    ? `http://localhost:3000/api/${apiname}/update/${encodeURIComponent(id)}`
     : `http://localhost:3000/api/${apiname}/create`;
   const method = "POST" ;
 
@@ -52,7 +52,7 @@ class ApiServices {
       body: JSON.stringify(Data),
     });
 
-    if (response.status === 201) {
+    if (response.status === 201||response.status === 200) {
       setSuccessMessage("Data saved successfully!");
       setIsEditable(false);
       if (!isDataAvailable){
@@ -62,7 +62,7 @@ class ApiServices {
         setError("Failed to save data.");
     }
   } catch (error) {
-     
+     console.log(error)
     setError("An error occurred while saving data.");
   }
 };
@@ -76,7 +76,7 @@ handleSubmitModal = async (e,Data,apiname,setSuccessMessage,firstcreation,handle
 
   const url = firstcreation
   ? `http://localhost:3000/api/${apiname}/create`
-    : `http://localhost:3000/api/${apiname}/update/${id}`;
+    : `http://localhost:3000/api/${apiname}/update/${encodeURIComponent(id)}`;
     const method = "POST" ;
 
   try {
@@ -89,7 +89,8 @@ handleSubmitModal = async (e,Data,apiname,setSuccessMessage,firstcreation,handle
       body: JSON.stringify(Data),
     });
 
-    if (response.status === 201) {
+    if (response.status === 201||response.status === 200) {
+      console.log("success")
       setSuccessMessage("Data saved successfully!");
       handleClose();
     } else if (response.status === 400 || response.status === 409 ) {

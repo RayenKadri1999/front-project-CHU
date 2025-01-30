@@ -65,7 +65,21 @@ export default function Hospitaliere() {
   
     matricule: id,
   };
-  
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
+
+        return cleanedData;
+    };
 
   const [isEditable, setIsEditable] = useState(false);
   const [isDataAvailable, setIsDataAvailable] = useState(true);
@@ -148,10 +162,27 @@ export default function Hospitaliere() {
   //   }
   // };
 
-  const handleSubmit = (e) => {
-    apiServices.handleSubmit(e,hospitaliereData,"hospitaliere",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
-   }
+    const handleSubmit = (e) => {
+        // Clean the data before sending it
+        const cleanedHospitaliereData = cleanData(hospitaliereData);
 
+        // Call the existing function to handle submission, passing the cleaned data
+        apiServices.handleSubmit(
+            e,
+            cleanedHospitaliereData,
+            "hospitaliere",
+            setSuccessMessage,
+            isDataAvailable,
+            setIsDataAvailable,
+            setIsEditable,
+            setError,
+            id
+        );
+        console.log(error)
+
+    };
+    console.log("success")
+    console.log(error)
    useEffect(() => {
     apiServices.loadDossierDetails(setHospitaliereData,"hospitaliere",setIsDataAvailable,setError,id)
   }, []);
@@ -197,7 +228,6 @@ export default function Hospitaliere() {
                   <FormControl fullWidth>
                   <FormLabel component="legend">{field.label}</FormLabel>
                   <RadioGroup
-                  aria-required
             name={field.name}
             value={hospitaliereData[field.name] || ""}
             onChange={handleChange}
@@ -206,7 +236,7 @@ export default function Hospitaliere() {
             {field.options.map((option) => (
               <FormControlLabel
                 key={option}
-                required
+
                 value={option}
                 control={<Radio disabled={!isEditable} />}
                 label={option}
@@ -271,7 +301,7 @@ export default function Hospitaliere() {
           >
             {field.options.map((option) => (
               <FormControlLabel
-              required
+
                 key={option}
                 value={option}
                 control={<Radio disabled={!isEditable} />}
@@ -291,7 +321,6 @@ export default function Hospitaliere() {
                 onChange={handleChange}
                 value={hospitaliereData[field.name]}
                 disabled={!isEditable}
-                required
                 sx={{ m: 1,  width: "25ch" }}
                 type={field.type || "text"}
                 InputProps={{
@@ -315,7 +344,7 @@ export default function Hospitaliere() {
               onChange={handleChange}
               value={hospitaliereData[field.name]}
               disabled={!isEditable}
-              required
+
               sx={{ m: 1,  width: "25ch" }}
               type={field.type || "text"}
               InputProps={{
@@ -340,7 +369,7 @@ export default function Hospitaliere() {
                       value={hospitaliereData[field.name] || ""}
                       onChange={handleChange}
                       disabled={!isEditable}
-                      required
+
                     >
                       {field.options.map((option) => (
                         <MenuItem key={option} value={option}>{option}</MenuItem>

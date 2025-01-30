@@ -56,7 +56,7 @@ export default function ExamenClinique() {
     matricule: id,
   });
   const [NihssData, setNihssData] = useState({
-    
+
     categorie: '',
 
   date: new Date(),
@@ -95,9 +95,22 @@ export default function ExamenClinique() {
 
   matricule: id,
 
-   
+
   });
- 
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
+
+        return cleanedData;
+    };
 
   const [openAdd, setOpenAdd] = useState(false)
   const [openDetails, setOpenDetails] = useState(false)
@@ -110,45 +123,51 @@ export default function ExamenClinique() {
     setOpenfunc(false)
   }
 
- 
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
 
-    if (name === 'testDeglutition.testDone') {
-      setExamenCliniqueData((prevData) => ({
-        ...prevData,
-        testDeglutition: {
-          ...prevData.testDeglutition,
-          testDone: value === 'true', // Convert to boolean
-          hasTrouble: null, // Reset trouble state if testDone changes
-          typeOfTrouble: '',
-        },
-      }));
-    } else if (name === 'testDeglutition.hasTrouble') {
-      setExamenCliniqueData((prevData) => ({
-        ...prevData,
-        testDeglutition: {
-          ...prevData.testDeglutition,
-          hasTrouble: value === 'true', // Convert to boolean
-          typeOfTrouble: '', // Reset type of trouble if hasTrouble changes
-        },
-      }));
-    } else if (name === 'testDeglutition.typeOfTrouble') {
-      setExamenCliniqueData((prevData) => ({
-        ...prevData,
-        testDeglutition: {
-          ...prevData.testDeglutition,
-          typeOfTrouble: value,
-        },
-      }));
-    } else {
-      setExamenCliniqueData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
-  };
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+
+        setExamenCliniqueData((prevData) => {
+            // Handle the change for testDeglutition attributes
+            if (name === 'testDeglutition.testDone') {
+                if (value === '') {
+                    // If testDone is not selected, reset testDeglutition to null
+                    return {
+                        ...prevData,
+                        testDeglutition: null,
+                    };
+                } else if (value === false) {
+                    // If testDone is selected as "Non", set testDone to false and other fields to null
+                    return {
+                        ...prevData,
+                        testDeglutition: {
+                            testDone: false,
+                            hasTrouble: null,
+                            typeOfTrouble: null, // Ensure typeOfTrouble is null when testDone is false
+                        },
+                    };
+                }
+            }
+
+            // If other parts of testDeglutition are modified, update only the specific attribute
+            if (name === 'testDeglutition.hasTrouble' || name === 'testDeglutition.typeOfTrouble') {
+                return {
+                    ...prevData,
+                    testDeglutition: {
+                        ...prevData.testDeglutition,
+                        [name.split('.').pop()]: value, // Update the correct property in testDeglutition
+                    },
+                };
+            }
+
+            // For other fields, just return the updated data
+            return {
+                ...prevData,
+                [name]: value,
+            };
+        });
+    };
 
   // const handleSubmit1 = (e) => {
   //   apiServices.handleSubmit(e,examenCliniqueData,"examenclinique",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
@@ -183,10 +202,11 @@ export default function ExamenClinique() {
                 console.log(nihssId);
                 submitedexamenData.idNIHSS = nihssId;
             }
+            const cleanedexamenData = cleanData(submitedexamenData);
 
-            submitedexamenData.NIHSSValue = NihssData.totalAuto;
-            setExamenCliniqueData(submitedexamenData); // Update state before submission
-            apiServices.handleSubmit(e, submitedexamenData, "examenclinique", setSuccessMessage, isDataAvailable, setIsDataAvailable, setIsEditable, setError, id);
+            cleanedexamenData.NIHSSValue = NihssData.totalAuto;
+            setExamenCliniqueData(cleanedexamenData); // Update state before submission
+            apiServices.handleSubmit(e, cleanedexamenData, "examenclinique", setSuccessMessage, isDataAvailable, setIsDataAvailable, setIsEditable, setError, id);
         } else {
             setError("Veuillez valider Nihss");
         }
@@ -199,12 +219,13 @@ export default function ExamenClinique() {
 
   const handleSubmit = (e) => {
     handleSubmitDetNihss(e); // Call the second function
-   
+
   };
 
    useEffect(() => {
+
     apiServices.loadDossierDetails(setExamenCliniqueData,"examenclinique",setIsDataAvailable,setError,id)
-    
+
   }, []);
 
   useEffect(() => {
@@ -218,15 +239,15 @@ export default function ExamenClinique() {
     <ThemeProvider theme={theme}>
 
  <div className="App">
- 
-      <ModalDialog open={openAdd}
-       handleClose={() => handleClose(setOpenAdd)} 
 
-      FormComponent={AddNihssForm} 
+      <ModalDialog open={openAdd}
+       handleClose={() => handleClose(setOpenAdd)}
+
+      FormComponent={AddNihssForm}
 
   formProps={{                  // Pass the props that the form needs
     setData:setExamenCliniqueData,
-   
+
     setNihssData:setNihssData,
     setSuccessMessage:setSuccessMessage,
   }}
@@ -256,7 +277,7 @@ export default function ExamenClinique() {
           <Typography variant="h6" gutterBottom>
             Examen Neurologique initial
           </Typography>
-          
+
           <Box sx={{ display: "flex", gap: 2, mb: 3 ,alignItems: "center"}}>
             <TextField
               required
@@ -270,28 +291,28 @@ export default function ExamenClinique() {
             />
 
              {!isDataAvailable ? (
-            
+
       <Button
         variant="contained"
         color="primary"
         onClick={ () => handleOpen(setOpenAdd)}
-        sx={{ minWidth: 40, height: 40 }} 
+        sx={{ minWidth: 40, height: 40 }}
          disabled={!isEditable}
       >+
       </Button>
-             ) : ( 
+             ) : (
      <Button
       variant="contained"
       color="primary"
       onClick={ () => handleOpen(setOpenDetails)}
-      sx={{ minWidth: 40, height: 40 }} 
+      sx={{ minWidth: 40, height: 40 }}
         disabled={!isEditable}
     >...
     </Button>
           )
 }
             <TextField
-              required
+
               type="number"
               name="LASTInitial"
               onChange={handleChange}
@@ -300,22 +321,22 @@ export default function ExamenClinique() {
               fullWidth
               disabled={!isEditable}
               InputProps={{
-                  
+
                 endAdornment:     <PdfButton pdfUrl="/pdf/LAST.pdf"  />,
-             
+
                 readOnly: !isEditable,
               }}
             />
 
 
-                 
-             
+
+
 
 
 
 
           </Box>
-        
+
       <Box sx={{ mt: 2 }}>
                 <TextField
                   name="ResultExamenNeuroInitial"
@@ -337,10 +358,10 @@ export default function ExamenClinique() {
           <Typography variant="h6" gutterBottom >
             Examen Général
           </Typography>
-          
+
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2}}>
             <TextField
-           
+
               name="TA"
               value={examenCliniqueData.TA}
               label="TA"
@@ -349,7 +370,7 @@ export default function ExamenClinique() {
               disabled={!isEditable}
             />
             <TextField
-         
+
               name="Dextro"
               value={examenCliniqueData.Dextro}
               label="Dextro"
@@ -358,7 +379,7 @@ export default function ExamenClinique() {
               disabled={!isEditable}
             />
             <TextField
-           
+
               name="AuscultationCardiaque"
               value={examenCliniqueData.AuscultationCardiaque}
               label="Auscultation Cardiaque"
@@ -367,7 +388,7 @@ export default function ExamenClinique() {
               disabled={!isEditable}
             />
             <TextField
-          
+
               name="AuscultationPulmonaire"
               value={examenCliniqueData.AuscultationPulmonaire}
               label="Auscultation Pulmonaire"
@@ -491,11 +512,11 @@ export default function ExamenClinique() {
                 />
               </Box>
 
-     
 
-      
-          
-         
+
+
+
+
 
 
 

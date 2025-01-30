@@ -52,7 +52,21 @@ export default function ConclusionInitiale_Hematome() {
     });
 
 
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
 
+        return cleanedData;
+    };
 
 
 
@@ -99,26 +113,26 @@ export default function ConclusionInitiale_Hematome() {
                         <Grid container spacing={1}>
                             <Grid item xs={6}>
 
-                                <TextField required fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
+                                <TextField     fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
 
-                                <TextField required fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
+                                <TextField     fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField required fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}   />
+                                <TextField     fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}   />
 
-                                <TextField required fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes} />
+                                <TextField     fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes} />
                             </Grid>
                             <Grid item xs={6}>
 
-                            <TextField required fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}   />
-                                <TextField required fullWidth type ="number" id="outlined-required" name="ActivitéAntiXa" label="Activité anti Xa " sx={{ m: 1 }}  disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ActivitéAntiXa}  />
+                            <TextField     fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" sx={{ m: 1 }} disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}   />
+                                <TextField     fullWidth type ="number" id="outlined-required" name="ActivitéAntiXa" label="Activité anti Xa " sx={{ m: 1 }}  disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ActivitéAntiXa}  />
                             </Grid>
                             <Grid item xs={6}>
-                                <TextField required fullWidth type ="number" id="outlined-required" label="Urée/Créat  " name="Urée_Créat" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Urée_Créat}  sx={{ m: 1 }} />
+                                <TextField     fullWidth type ="number" id="outlined-required" label="Urée/Créat  " name="Urée_Créat" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Urée_Créat}  sx={{ m: 1 }} />
 
 
 
-                                <TextField required fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique (ELIXTRA, RIVA/XABAN)" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
+                                <TextField     fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique (ELIXTRA, RIVA/XABAN)" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
                             </Grid>
                         </Grid>
                     </Box>

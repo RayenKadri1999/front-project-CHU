@@ -47,7 +47,21 @@ export default function EvolutionClassification({ commonState }) {
         Escarre: "",
         matricule: id,
     });
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach(key => {
+            // Remove fields that have an empty string or are unselected (null or undefined)
+            if (cleanedData[key] === "" || cleanedData[key] === null || cleanedData[key] === undefined) {
+                delete cleanedData[key];
+            }
+        });
 
+        return cleanedData;
+    };
     const SubSection = ({ title, name, value, handleChange,isEditable }) => (
         <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
             <Typography sx={{ mb: 1 }}>{title}</Typography>

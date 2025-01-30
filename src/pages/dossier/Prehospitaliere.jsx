@@ -182,7 +182,7 @@ export default function Prehospitaliere({ commonState }) {
             {showOtherTextField && (
               <TextField
                 label="Autre (précisez)"
-                required
+
                 name="autre1"
                 fullWidth
                 sx={{ mt: 2 }}
@@ -273,7 +273,7 @@ export default function Prehospitaliere({ commonState }) {
             {showOtherTextField2 && (
               <TextField
                 label="Autre Motif (précisez)"
-                required
+
                 name="autre2"
                 fullWidth
                 sx={{ mt: 2 }}
