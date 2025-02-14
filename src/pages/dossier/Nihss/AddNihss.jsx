@@ -230,7 +230,7 @@ function AddNihss({handleClose,id,setSuccessMessage}) {
          name="categorie"
          value={NihssData.categorie}
          onChange={handleChange}
-required
+
          margin="normal"
        />
    
@@ -274,7 +274,7 @@ required
                         <TimePicker
                       label="Heure"
                          
-                        required
+
                           value={dayjs(NihssData.date)}
                           
                           onChange={handleChangeTime('date')}
@@ -326,7 +326,7 @@ required
               onChange={handleChange}
               name={group.name1}
               label={`${group.label}`}
-              required
+
               fullWidth
             >
               {/* Dynamically generate the MenuItems based on the max value from valueRange */}

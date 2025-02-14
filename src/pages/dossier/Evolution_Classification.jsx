@@ -62,12 +62,12 @@ export default function EvolutionClassification({ commonState }) {
 
         return cleanedData;
     };
-    const SubSection = ({ title, name, value, handleChange,isEditable }) => (
+    const SubSection = ({ title, name, value, handleChange }) => (
         <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
             <Typography sx={{ mb: 1 }}>{title}</Typography>
             <RadioGroup row name={name} value={value} onChange={handleChange}  disabled={!isEditable}>
-                <FormControlLabel value="Oui" control={<Radio />} label="Oui" />
-                <FormControlLabel value="Non" control={<Radio />} label="Non" />
+                <FormControlLabel value="Oui" control={<Radio disabled={!isEditable} />}  label="Oui" />
+                <FormControlLabel value="Non" control={<Radio disabled={!isEditable} />}  label="Non" />
             </RadioGroup>
         </Box>
     );
@@ -204,15 +204,15 @@ export default function EvolutionClassification({ commonState }) {
                                         name="PneumopathieInhalation"
                                         value={evolutionClassificationData.PneumopathieInhalation}
                                         handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        disabled={!isEditable}
                                     />
 
                                     <SubSection
                                         title="Infection urinaire"
                                         name="InfectionUrinaire"
                                         value={evolutionClassificationData.InfectionUrinaire}
-                                        handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        onChange={handleChangeBool}
+                                        disabled={!isEditable}
                                     />
                                     </Box>
                                     <Box sx={{ mt: 4, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -224,7 +224,7 @@ export default function EvolutionClassification({ commonState }) {
                                         name="EmboliePulmonaire"
                                         value={evolutionClassificationData.EmboliePulmonaire}
                                         handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        disabled={!isEditable}
                                     />
 
                                     <SubSection
@@ -232,7 +232,7 @@ export default function EvolutionClassification({ commonState }) {
                                         name="ThromboseVeineuseProfonde"
                                         value={evolutionClassificationData.ThromboseVeineuseProfonde}
                                         handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        disabled={!isEditable}
                                     />
                                     </Box>
                                     <SubSection
@@ -240,7 +240,7 @@ export default function EvolutionClassification({ commonState }) {
                                         name="HemorragieExtracranienne"
                                         value={evolutionClassificationData.HemorragieExtracranienne}
                                         handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        disabled={!isEditable}
                                     />
 
                                     <SubSection
@@ -248,7 +248,7 @@ export default function EvolutionClassification({ commonState }) {
                                         name="Escarre"
                                         value={evolutionClassificationData.Escarre}
                                         handleChange={handleChangeBool}
-                                        isEditable={isEditable}
+                                        disabled={!isEditable}
                                     />
                                 </Box>
 

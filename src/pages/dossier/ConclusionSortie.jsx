@@ -281,7 +281,7 @@ setSuccessMessage:setSuccessMessage,
             <Grid container spacing={2} sx={{alignItems:'center'}}>
               <Grid item xs={12} sm={3}>
                 <TextField
-                  required
+
                   type="number"
                   name="NIHSSValue"
                   label="Nihss Sortie"
@@ -320,7 +320,7 @@ setSuccessMessage:setSuccessMessage,
               
               <Grid item xs={12} sm={4}>
                 <TextField
-                  required
+
                   type="number"
                   name="LastSortie"
                   label="LAST Sortie"

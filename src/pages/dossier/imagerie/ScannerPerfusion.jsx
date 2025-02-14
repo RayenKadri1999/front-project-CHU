@@ -94,11 +94,11 @@ const PerfusionScanner = ({ id, handleChange2 }) => {
       <form onSubmit={handleSubmit}>
         <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
             <Typography variant="h6">Scanner de perfusion</Typography>
-            {error && <Alert severity="error">{error}</Alert>}
+            {error && <Alert severity="info">{error}</Alert>}
 {/* Oui / Non Radio Group */}
 <RadioGroup row name="status" defaultValue="Non" value={scannerPerfusionData.status} onChange={(event) => handleChange2(event, setScannerPerfusionData)}>
-                <FormControlLabel value="Oui" control={<Radio />} label="Oui" />
-                <FormControlLabel value="Non" control={<Radio />} label="Non" />
+                <FormControlLabel value="Oui" control={<Radio disabled={!isEditable}  />} label="Oui" />
+                <FormControlLabel value="Non" control={<Radio disabled={!isEditable}  />} label="Non" />
             </RadioGroup>
 
             {scannerPerfusionData.status =="Oui" &&

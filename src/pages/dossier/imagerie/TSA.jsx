@@ -117,7 +117,7 @@ const TSASection = ({ id,handleChange2, handleChangecheck }) => {
       <FormControlLabel
         key={index}
         value={option.value}
-        required
+
         control={<Radio />}
         label={option.label}
         disabled={!isEditable}

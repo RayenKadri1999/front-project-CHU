@@ -313,22 +313,22 @@ required
    { label: 'Vigilance', name1: 'vigilance'},
    { label: 'Orientation', name1: 'orientation'},
    { label: 'Commandes', name1: 'commandes' },
-   { label: 'Oculomotricite', name1: 'oculomotricite' },
+   { label: 'Oculomotricité', name1: 'oculomotricite' },
    { label: 'Champ Visuel', name1: 'champVisuel'},
    { label: 'Paralysie Faciale', name1: 'paralysieFaciale' },
 
-   { label: 'Motricite Membre Sup (G)', name1: 'motriciteMembreSupG'},
-   { label: 'Motricite Membre Sup (D)', name1: 'motriciteMembreSupD' },
+   { label: 'Motricité Membre Sup (G)', name1: 'motriciteMembreSupG'},
+   { label: 'Motricité Membre Sup (D)', name1: 'motriciteMembreSupD' },
 
-   { label: 'Motricite Membre Int (G)', name1: 'motriciteMembreIntG' },
-   { label: 'Motricite Membre Int (D)', name1: 'motriciteMembreIntD' },
-   
+       { label: 'Motricité Membre Int (G)', name: 'motriciteMembreIntG' },
+       { label: 'Motricité Membre Int (D)', name: 'motriciteMembreIntD' },
+
    { label: 'Ataxie', name1: 'ataxie' },
-   { label: 'Sensibilite', name1: 'sensibilite' },
+   { label: 'Sensibilité', name1: 'sensibilite' },
    { label: 'Langage', name1: 'langage' },
    { label: 'Dysarthrie', name1: 'dysarthrie'},
-   
-   { label: 'Extinction Negligence', name1: 'extinctionNegligence' },
+
+   { label: 'Extinction Négligence', name1: 'extinctionNegligence' },
 
      // Add other fields similarly
    ].map((group, index) => (
@@ -349,7 +349,7 @@ required
                  onChange={handleChange}
                  name={group.name1}
                  label={`${group.label} 1`}
-                 required
+
                  fullWidth
                  
                >

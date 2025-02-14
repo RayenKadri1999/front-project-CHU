@@ -361,7 +361,7 @@ format="DD/MM/YYYY"
               onChange={handleChange}
               name={group.name1}
               label={`${group.label}`}
-              required
+
               fullWidth
             >
               {/* Dynamically generate the MenuItems based on the max value from valueRange */}

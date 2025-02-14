@@ -280,7 +280,6 @@ export default function ExamenClinique() {
 
           <Box sx={{ display: "flex", gap: 2, mb: 3 ,alignItems: "center"}}>
             <TextField
-              required
               type="number"
               name="NIHSSValue"
               onChange={handleChange}

@@ -45,19 +45,19 @@ export default function Etiologie({ commonState }) {
 
   
    
-    athérothrombotique:"non",
-    athérothrombotiqueContent:[],
+    atherothrombotique:"non",
+      atherothrombotiqueContent:[],
     info:"",
     cardioembolique:"non",
     cardioemboliqueContent:[],
     fibrillation_valvulaire:"",
     fibrillation_type:"",
-    fibrillation_anticoagulée:"",
+    fibrillation_anticoagulee:"",
     
     lacune:"non",
  
-    Indeterminé:"non",
-    IndeterminéContent:"",
+    Indetermine:"non",
+    IndetermineContent:"",
     matricule: id,
       
      
@@ -65,21 +65,21 @@ export default function Etiologie({ commonState }) {
 
   const TOASTDataInit={
 
-  
-    athérothrombotique:"non",
-    athérothrombotiqueContent:[],
+
+      atherothrombotique:"non",
+      atherothrombotiqueContent:[],
     info:"",
     cardioembolique:"non",
     cardioemboliqueContent:[],
 
     fibrillation_valvulaire:"",
     fibrillation_type:"",
-    fibrillation_anticoagulée:"",
+      fibrillation_anticoagulee:"",
     
     lacune:"non",
  
-    Indeterminé:"non",
-    IndeterminéContent:"",
+    Indetermine:"non",
+    IndetermineContent:"",
     matricule: id,
       
      
@@ -117,14 +117,14 @@ export default function Etiologie({ commonState }) {
   };
 
 
-  
- 
+
+
   const handleChangecheck = (e, Data, setData, key) => {
     const { name,checked } = e.target;
-  
+
 
     if (checked) {
-      
+
         const updatedArray = [...Data[key], name];
 
         setData((prevData) => ({
@@ -132,7 +132,7 @@ export default function Etiologie({ commonState }) {
             [key]: updatedArray,
         }));
     } else {
-      
+
 
         const updatedArray = Data[key].filter(item => item !== name);
 
@@ -145,7 +145,7 @@ export default function Etiologie({ commonState }) {
             ...prevData,
             fibrillation_valvulaire:"",
             fibrillation_type:"",
-            fibrillation_anticoagulée:"", 
+            fibrillation_anticoagulee:"",
           }));
         }
     }
@@ -239,10 +239,10 @@ const handleSubmitAscod = (e) => {
             {/* Si athérothrombotique  */}
             <FormControlLabel 
                         control={
-                        <Checkbox   name="athérothrombotique"
+                        <Checkbox   name="atherothrombotique"
                             disabled={!isEditable}
                                
-                            checked={TOASTData.athérothrombotique==="oui"} 
+                            checked={TOASTData.atherothrombotique==="oui"}
                             onChange={(event) => handleChangecheck2(event,setTOASTData)}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          />
@@ -251,15 +251,15 @@ const handleSubmitAscod = (e) => {
             <Typography variant="h6" marginTop={5}>Athérothrombotique</Typography>
             </Stack>
 
-            {TOASTData.athérothrombotique==="oui" &&
+            {TOASTData.atherothrombotique==="oui" &&
             <FormGroup sx={{marginLeft:5}}>
                     <FormControlLabel 
                         control={
                         <Checkbox   name="Intracranien"
                             disabled={!isEditable}
                                 id="intracranien"
-                            checked={TOASTData.athérothrombotiqueContent.includes("Intracranien")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"athérothrombotiqueContent")}
+                            checked={TOASTData.atherothrombotiqueContent.includes("Intracranien")}
+                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          label="Intracranien" />
 
@@ -268,8 +268,8 @@ const handleSubmitAscod = (e) => {
                         <Checkbox   name="Extracranien TSA"
                             disabled={!isEditable}
                                 id="extracranienTSA"
-                            checked={TOASTData.athérothrombotiqueContent.includes("Extracranien TSA")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"athérothrombotiqueContent")}
+                            checked={TOASTData.atherothrombotiqueContent.includes("Extracranien TSA")}
+                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          label="Extracranien TSA" />
 
@@ -278,8 +278,8 @@ const handleSubmitAscod = (e) => {
                         <Checkbox   name="Crosse aortique"
                             disabled={!isEditable}
                                 id="Crosseaortique"
-                            checked={TOASTData.athérothrombotiqueContent.includes("Crosse aortique")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"athérothrombotiqueContent")}
+                            checked={TOASTData.atherothrombotiqueContent.includes("Crosse aortique")}
+                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          label="Crosse aortique" />
 
@@ -288,8 +288,8 @@ const handleSubmitAscod = (e) => {
                         <Checkbox   name="Plaque non stésnosante active"
                             id="plaquenonStésnosante"
                             disabled={!isEditable}
-                            checked={TOASTData.athérothrombotiqueContent.includes("Plaque non stésnosante active")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"athérothrombotiqueContent")}
+                            checked={TOASTData.atherothrombotiqueContent.includes("Plaque non stésnosante active")}
+                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          label="Plaque non stésnosante active" />
 
@@ -358,9 +358,9 @@ const handleSubmitAscod = (e) => {
       <RadioGroup 
       row 
     
-      name="fibrillation_anticoagulée"  
+      name="fibrillation_anticoagulee"
     
-       value={TOASTData.fibrillation_anticoagulée} 
+       value={TOASTData.fibrillation_anticoagulee}
     
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
@@ -489,22 +489,22 @@ const handleSubmitAscod = (e) => {
              
 <FormControlLabel 
                         control={
-                        <Checkbox   name="Indeterminé"
+                        <Checkbox   name="Indetermine"
                             disabled={!isEditable}
                                
-                            checked={TOASTData.Indeterminé==="oui"} 
+                            checked={TOASTData.Indetermine==="oui"}
                             onChange={(event) => handleChangecheck2(event,setTOASTData)}
                             inputProps={{ 'aria-label': 'controlled' }} />}
                          />
                           <Typography variant="h6">Indéterminée</Typography>
 </Stack>
-{TOASTData.Indeterminé ==="oui" &&
+{TOASTData.Indetermine ==="oui" &&
 <RadioGroup 
       column 
-      id="IndeterminéContent" 
-      name="IndeterminéContent" 
+      id="IndetermineContent"
+      name="IndetermineContent"
 
-       value={TOASTData.IndeterminéContent} 
+       value={TOASTData.IndetermineContent}
     
        onChange={(event) => handleChange(event, setTOASTData)}
     sx={{ marginLeft:5, }}
@@ -559,7 +559,7 @@ const handleSubmitAscod = (e) => {
 
       <form onSubmit={handleSubmitAscod}>
       <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-      {error2 && <Alert severity="error">{error2}</Alert>}
+      {error2 && <Alert severity="info">{error2}</Alert>}
       <Box
            sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
         

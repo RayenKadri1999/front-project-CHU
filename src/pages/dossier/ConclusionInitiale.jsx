@@ -97,21 +97,21 @@ export default function ConclusionInitiale() {
           </Typography>
             <Grid container spacing={1}>
             <Grid item xs={6}>
-              <TextField required fullWidth type ="number" id="outlined-required" label="ECG  " name="ECG" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ECG}  sx={{ m: 1 }} />
+              <TextField   fullWidth type ="number" id="outlined-required" label="ECG  " name="ECG" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.ECG}  sx={{ m: 1 }} />
            
-              <TextField required fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
+              <TextField  fullWidth type ="number" id="outlined-required" label="TP "  name="TP" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.TP}   sx={{ m: 1 }} />
            
-              <TextField required fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
+              <TextField  fullWidth type ="number"  id="outlined-required" label="Ratio TCA "name="Ratio_TCA" sx={{ m: 1 }} disabled={!isEditable} onChange={handleChange2} value={ConclusionInitialeData.Ratio_TCA} />
               </Grid>
               <Grid item xs={6}>
-              <TextField required fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}  sx={{ m: 1 }} />
+              <TextField  fullWidth  type ="number" id="outlined-required"  name="INR" label="INR" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.INR}  sx={{ m: 1 }} />
               
-              <TextField required fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes}  sx={{ m: 1 }} />
+              <TextField  fullWidth type ="number" id="outlined-required" name="Plaquettes" label="Plaquettes" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Plaquettes}  sx={{ m: 1 }} />
            
-              <TextField required fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}  sx={{ m: 1 }} />
+              <TextField  fullWidth type ="number" id="outlined-required" name="Hémoglobine" label="Hémoglobine" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Hémoglobine}  sx={{ m: 1 }} />
               </Grid>
               <Grid item xs={6}>
-              <TextField required fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
+              <TextField  fullWidth type ="number" id="outlined-required" name="Dosage" label=" Dosage spécifique" disabled={!isEditable}  onChange={handleChange2} value={ConclusionInitialeData.Dosage}  sx={{ m: 1 }} />
            </Grid>
            </Grid>
 </Box>

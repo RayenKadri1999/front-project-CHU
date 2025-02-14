@@ -39,200 +39,200 @@ import apiServices from "../../services/api-services";
 
 
 export default function Imagerie() {
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#0E8388",
-      },
-    },
-  });
+    const theme = createTheme({
+        palette: {
+            primary: {
+                main: "#0E8388",
+            },
+        },
+    });
 
-  const navigate = useNavigate();
-  const {  idDossier,id } = useParams();
-  const [isEditable, setIsEditable] = useState(false);
-  const [isDataAvailable, setIsDataAvailable] = useState(true);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [error, setError] = useState(null);
-  
-  const [imagerieData, setImagerieData] = useState({
-    // IRM: "",
-    // dateIRM: new Date(),
-    // dateFinIRM: new Date(),
-    // Diffusion1IRM:"",
-    // Diffusion2IRM:"",
-    // DetailsIRM:"",
-      Synthèse:"",
+    const navigate = useNavigate();
+    const {  idDossier,id } = useParams();
+    const [isEditable, setIsEditable] = useState(false);
+    const [isDataAvailable, setIsDataAvailable] = useState(true);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [error, setError] = useState(null);
 
-  
-      Synthèseflair:"",
-      SynthèsetofWillis:"",
-      Synthèset2Swan:"",
-      SynthèseASL:"",
-      SynthèseDWI:"",
-   
-    // DWI: "",
-    // TOF_Willis: "",
-    // FLAIR: "",
-    // SWAN: "",
-    // Angio_TDM: " ",
-    // date_TDM_Angio: new Date(),
-    // ECG: "",
-    // TP: "",
-    // Ratio_TCA: "",
-    // D_dimères: "",
-    // Fibrinogène: "",
-    // Plaquettes: "",
-    // Hémoglobine: "",
-    // Dosage: "",
-    matricule: id,
-  });
+    const [imagerieData, setImagerieData] = useState({
+        // IRM: "",
+        // dateIRM: new Date(),
+        // dateFinIRM: new Date(),
+        // Diffusion1IRM:"",
+        // Diffusion2IRM:"",
+        // DetailsIRM:"",
+        Synthèse:"",
 
 
-  useEffect(() => {
-    apiServices.loadDossierDetails(setImagerieData,"imagerie",setIsDataAvailable,setError,id)
-  }, [id]);
+        Synthèseflair:"",
+        SynthèsetofWillis:"",
+        Synthèset2Swan:"",
+        SynthèseASL:"",
+        SynthèseDWI:"",
 
-  const toggleEditMode = () => {
-    setIsEditable((prev) => !prev);
-  };
+        // DWI: "",
+        // TOF_Willis: "",
+        // FLAIR: "",
+        // SWAN: "",
+        // Angio_TDM: " ",
+        // date_TDM_Angio: new Date(),
+        // ECG: "",
+        // TP: "",
+        // Ratio_TCA: "",
+        // D_dimères: "",
+        // Fibrinogène: "",
+        // Plaquettes: "",
+        // Hémoglobine: "",
+        // Dosage: "",
+        matricule: id,
+    });
 
-  
+
+    useEffect(() => {
+        apiServices.loadDossierDetails(setImagerieData,"imagerie",setIsDataAvailable,setError,id)
+    }, [id]);
+
+    const toggleEditMode = () => {
+        setIsEditable((prev) => !prev);
+    };
+
+
 
 
     const handleChangecheck = (e, Data, setData, setcheckfunction, key) => {
-      const { name, id, checked } = e.target;
-      
-  
-      if (checked) {
-        setcheckfunction((prevData) => ({
-              ...prevData,
-              [id]: true,
-          }));
-  
-          // Update the key in imagerieData with the new name added
-          const updatedArray = [...Data[key], name];
-  
-          setData((prevData) => ({
-              ...prevData,
-              [key]: updatedArray,
-          }));
-      } else {
-        setcheckfunction((prevData) => ({
-              ...prevData,
-              [id]: false,
-          }));
-  
-          const updatedArray = Data[key].filter(item => item !== name);
-  
-          setData((prevData) => ({
-              ...prevData,
-              [key]: updatedArray,
-          }));
-      }
-  };
-
-  const handleChange2 = (e,updateFunction) => {
-    const { name, value } = e.target;
-    
-    updateFunction((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
- 
+        const { name, id, checked } = e.target;
 
 
+        if (checked) {
+            setcheckfunction((prevData) => ({
+                ...prevData,
+                [id]: true,
+            }));
 
-  const handleSubmit = (e) => {
-    apiServices.handleSubmit(e,imagerieData,"imagerie",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
-   }
+            // Update the key in imagerieData with the new name added
+            const updatedArray = [...Data[key], name];
+
+            setData((prevData) => ({
+                ...prevData,
+                [key]: updatedArray,
+            }));
+        } else {
+            setcheckfunction((prevData) => ({
+                ...prevData,
+                [id]: false,
+            }));
+
+            const updatedArray = Data[key].filter(item => item !== name);
+
+            setData((prevData) => ({
+                ...prevData,
+                [key]: updatedArray,
+            }));
+        }
+    };
+
+    const handleChange2 = (e,updateFunction) => {
+        const { name, value } = e.target;
+
+        updateFunction((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
 
 
 
 
-   useEffect(() => {
-    apiServices.loadDossierDetails(setImagerieData,"imagerie",setIsDataAvailable,setError,id)
-  }, []);
-
-  return (
-    <ThemeProvider theme={theme}>
-      <Box  sx={{ display: "flex", flexDirection: "column", p: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Imagerie
-        </Typography>
-
-        {!isDataAvailable && (
-          <Alert severity="warning">
-            Il n'y a pas de données pour ce patient.
-          </Alert>
-
-
-        )}
+    const handleSubmit = (e) => {
+        apiServices.handleSubmit(e,imagerieData,"imagerie",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
+    }
 
 
 
 
-         {/* scanner */}
 
-         <ScannerSection   id={id}    handleChange2={handleChange2}   />
+    useEffect(() => {
+        apiServices.loadDossierDetails(setImagerieData,"imagerie",setIsDataAvailable,setError,id)
+    }, []);
 
-    
-       {/* IRM */}
+    return (
+        <ThemeProvider theme={theme}>
+            <Box  sx={{ display: "flex", flexDirection: "column", p: 3 }}>
+                <Typography variant="h4" gutterBottom>
+                    Imagerie
+                </Typography>
 
-       <IRM    id={id}   handleChange2={handleChange2}  handleChangecheck={handleChangecheck} />
-        
-       
-        
-                  
+                {!isDataAvailable && (
+                    <Alert severity="warning">
+                        Il n'y a pas de données pour ce patient.
+                    </Alert>
 
-              
-                  
 
-                  {/* scanner de prefusion */}
-                  
-                  <PerfusionScanner id={id} handleChange2={handleChange2} />
+                )}
 
-        {/* Synthese */}
 
-        <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-        <form onSubmit={handleSubmit}>
-              <Typography variant="h6">Synthèse de l'imagerie (IRM/Scanner)</Typography>
 
-            
-            
-         
 
-              <Box sx={{ mt: 2 }}>
-                <TextField
-                  name="Synthèse"
-                  label="Synthèse de l'imagerie(IRM/Scanner)"
-                  disabled={!isEditable}
-                  value={imagerieData.Synthèse}
-                  onChange={(event) => handleChange2(event, setImagerieData)}
-                  multiline
-                  rows={7}
-                  variant="outlined"
-                  fullWidth
-                />
-              </Box>
+                {/* scanner */}
 
-              <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                <ScannerSection   id={id}    handleChange2={handleChange2}   />
 
-        {successMessage && (
-          <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
-          )}
-                  </form>
+
+                {/* IRM */}
+
+                <IRM    id={id}   handleChange2={handleChange2}  handleChangecheck={handleChangecheck} />
+
+
+
+
+
+
+
+
+                {/* scanner de prefusion */}
+
+                <PerfusionScanner id={id} handleChange2={handleChange2} />
+
+                {/* Synthese */}
+
+                <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+                    <form onSubmit={handleSubmit}>
+                        <Typography variant="h6">Synthèse de l'imagerie (IRM/Scanner)</Typography>
+
+
+
+
+
+                        <Box sx={{ mt: 2 }}>
+                            <TextField
+                                name="Synthèse"
+                                label="Synthèse de l'imagerie(IRM/Scanner)"
+                                disabled={!isEditable}
+                                value={imagerieData.Synthèse}
+                                onChange={(event) => handleChange2(event, setImagerieData)}
+                                multiline
+                                rows={7}
+                                variant="outlined"
+                                fullWidth
+                            />
+                        </Box>
+
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+
+                        {successMessage && (
+                            <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
+                        )}
+                    </form>
+                </Box>
+
+
+
+
+
+
+
             </Box>
-
-
-
-
-
-         
-      
-      </Box>
-    </ThemeProvider>
-  );
+        </ThemeProvider>
+    );
 }

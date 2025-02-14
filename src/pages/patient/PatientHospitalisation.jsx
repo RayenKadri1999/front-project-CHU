@@ -82,13 +82,39 @@ const ListHospitalisation = () => {
       width: 300,
       renderCell: (params) => (
         <div style={{ display: "flex", justifyContent: "space-around" }}>
-          
-          <Button variant="text" onClick={() => deleteHospitalisation(params.row._id)} className="text-red-500">
+            <Button variant="text"    sx={{
+                background: 'linear-gradient(45deg, #4CAF50 30%, #2E7D32 90%)',
+                color: 'white',
+                fontWeight: 'bold',
+                textTransform: 'none',
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+                borderRadius: '8px',
+                padding: '8px 16px',
+                margin: '0 8px',
+                '&:hover': {
+                    background: 'linear-gradient(45deg, #388E3C 30%, #1B5E20 90%)',
+                    boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.3)',
+                },
+            }}onClick={() => navigate(`/PatientDossier/${encodeURIComponent(idDossier)}/${encodeURIComponent(params.row._id)}/${encodeURIComponent(params.row.TypeAVC)}`)}>
+                Details
+            </Button>
+          <Button variant="text"     sx={{
+              background: 'linear-gradient(45deg, #D32F2F 30%, #B71C1C 90%)',
+              color: 'white',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              borderRadius: '8px',
+              padding: '8px 16px',
+
+              '&:hover': {
+                  background: 'linear-gradient(45deg, #B71C1C 30%, #7F0000 90%)',
+                  boxShadow: '0px 6px 14px rgba(0, 0, 0, 0.3)',
+              },
+          }} onClick={() => deleteHospitalisation(params.row._id)} className="text-red-500">
             Delete
           </Button>
-          <Button variant="text" onClick={() => navigate(`/PatientDossier/${encodeURIComponent(idDossier)}/${encodeURIComponent(params.row._id)}/${encodeURIComponent(params.row.TypeAVC)}`)}>
-            Details
-          </Button>
+
         </div>
       ),
     },

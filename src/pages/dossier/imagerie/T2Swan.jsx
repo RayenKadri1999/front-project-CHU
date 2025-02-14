@@ -33,7 +33,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
     ThrombusvisibleTaille: "",
     TransformationHemoragique: "",
     TypeTransformation: "",
-    Hémosidérosecorticale: "",
+    Hemosiderosecorticale: "",
     Signes_veineux_hypoxie: "",
     Microbleeds: [],
     matricule: id,
@@ -313,7 +313,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
 
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body1">Hémosidérose corticale:</Typography>
-                  <RadioGroup row name="Hémosidérosecorticale" defaultValue="Oui" value={t2_SwanData.Hémosidérosecorticale} onChange={(event) => handleChange2(event, setT2_SwanData)}>
+                  <RadioGroup row name="Hemosiderosecorticale" defaultValue="Oui" value={t2_SwanData.Hemosiderosecorticale} onChange={(event) => handleChange2(event, setT2_SwanData)}>
                     <FormControlLabel value="Oui" control={<Radio />} label="Oui"  disabled={!isEditable}/>
                     <FormControlLabel value="Non" control={<Radio />} label="Non" disabled={!isEditable} />
                   </RadioGroup>

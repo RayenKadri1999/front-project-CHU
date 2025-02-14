@@ -211,8 +211,7 @@ fetchData();
           <DatePicker
             label="effectué le"
             fullwidth
-            required
-             format="DD/MM/YYYY"
+                           format="DD/MM/YYYY"
             value={dayjs(scannerData.DateScanner)}
             onChange={handleChangeDate('DateScanner')}
             renderInput={(params) => <TextField {...params} />}
@@ -226,8 +225,7 @@ fetchData();
         <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <TimePicker
                   label="à"
-                  required
-                  value={dayjs(scannerData.DateScanner)}
+                                      value={dayjs(scannerData.DateScanner)}
                 onChange={handleChangeTime("DateScanner")}
                 disabled={!isEditable}
                 sx={{display:"flex"}}
@@ -305,8 +303,8 @@ fetchData();
             name="AngioscanTSA_Willis"
             onChange={(event) => handleChange2(event, setScannerData)}
           >
-            <FormControlLabel value="Normal" control={<Radio />} label="Normal" disabled={!isEditable}     required />
-            <FormControlLabel value="Anormal" control={<Radio />} label="Anormal" disabled={!isEditable}     required />
+            <FormControlLabel value="Normal" control={<Radio />} label="Normal" disabled={!isEditable}      />
+            <FormControlLabel value="Anormal" control={<Radio />} label="Anormal" disabled={!isEditable}      />
           </RadioGroup>
  </Stack>
  {scannerData.AngioscanTSA_Willis == "Anormal" &&
@@ -321,7 +319,7 @@ fetchData();
           flexShrink: 0, // Prevents the label from shrinking when the container size changes
          
           textAlign: "center", // Center align text within the fixed width
-        }}>Occlusin </Typography>
+        }}>Occlusion </Typography>
         
             <RadioGroup
                 row
@@ -453,8 +451,7 @@ fetchData();
              <FormControlLabel
                  key={index}
                  value={option.value}
-                 required
-                 control={<Radio />}
+                                    control={<Radio />}
                  label={option.label}
                  disabled={!isEditable}
              />
@@ -496,8 +493,7 @@ fetchData();
              <FormControlLabel
                  key={index}
                  value={option.value}
-                 required
-                 control={<Radio />}
+                                    control={<Radio />}
                  label={option.label}
                  disabled={!isEditable}
              />
@@ -582,8 +578,7 @@ fetchData();
       <FormControlLabel
         key={index}
         value={option.value}
-        required
-        control={<Radio />}
+                 control={<Radio />}
         label={option.label}
         disabled={!isEditable}
       />
@@ -616,16 +611,15 @@ fetchData();
     onChange={(event) => handleChange2(event, setScannerData)}
   >
     {[
-        { value: "Portion sous bulbaire", label: "G" },
-        { value: "Intracrânienne", label: "G" },
-        { value: "Aspect dysplasique", label: "G" }
+        { value: "Portion sous bulbaire", label: "D" },
+        { value: "Intracrânienne", label: "D" },
+        { value: "Aspect dysplasique", label: "D" }
 ].map((option, index) => (
       <FormControlLabel
         key={index}
         value={option.value}
         control={<Radio />}
-        required
-        label={option.label}
+                 label={option.label}
         disabled={!isEditable}
       />
     ))}
@@ -677,8 +671,7 @@ fetchData();
         key={index}
         value={option.value}
         control={<Radio />}
-        required
-        label={option.label}
+                 label={option.label}
         disabled={!isEditable}
       />
     ))}
@@ -721,8 +714,7 @@ fetchData();
       <FormControlLabel
         key={index}
         value={option.value}
-        required
-        control={<Radio />}
+                 control={<Radio />}
         label={option.label}
         disabled={!isEditable}
       />
