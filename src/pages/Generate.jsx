@@ -33,25 +33,31 @@ const Generate = () => {
         try {
             // Make a GET request to the backend with the selected format as a query parameter
             const response = await axios.get(
-                `http://localhost:3000/api/files/export?format=${selectedFormat}`,  {headers: authHeader() },// Adjusted to use the GET request for file export
-                { responseType: 'blob' } // Ensures the file is received as a Blob 
-                );
+                `http://localhost:3000/api/download/exportexcel`,
+                {
+                    headers: authHeader(),
+                    responseType: 'blob', // Ensures the file is received as a Blob
+                }
+            );
 
             // Create a link element for the file download
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const url = window.URL.createObjectURL(response.data);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `${selectedFormat}-file.${getFileExtension(selectedFormat)}`);
+            const date = new Date(Date.now());
+            link.setAttribute('download', `${selectedFormat}-${date.toISOString()}-file.xlsx`); // Use correct extension
             document.body.appendChild(link);
             link.click(); // Trigger the download
 
-            // Clean up the DOM
-            link.parentNode.removeChild(link);
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url); // Free up memory
         } catch (error) {
             console.error('Error generating file:', error);
             alert('Failed to generate file');
         }
     };
+
 
     const getFileExtension = (format) => {
         switch (format) {
