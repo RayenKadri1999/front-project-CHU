@@ -27,17 +27,11 @@ export default function ImagerieNumerique() {
         {
             field: "actions",
             headerName: "ACTIONS",
-            width: 200,
+            width: 300,
             renderCell: (params) => (
                 <div
                     style={{ display: "flex", justifyContent: "space-around" }}
                 >
-                    <Button
-                        variant="text"
-                        onClick={() => viewMriScan(params.row._id)}
-                    >
-                        Voir
-                    </Button>
                     <Button
                         variant="text"
                         onClick={() => downloadMriScan(params.row._id)}
@@ -154,14 +148,6 @@ export default function ImagerieNumerique() {
         }
     };
 
-    const viewMriScan = async (scanId) => {
-        try {
-            // Open in new tab or implement viewer
-            window.open(`http://localhost:1234/api/mri-scans/view/${scanId}`, '_blank');
-        } catch (error) {
-            setError("Erreur lors de l'ouverture du scan IRM");
-        }
-    };
 
     const downloadMriScan = async (scanId) => {
         try {
