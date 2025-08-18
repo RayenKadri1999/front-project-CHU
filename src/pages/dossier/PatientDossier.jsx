@@ -159,6 +159,7 @@ const PatientDossier = () => {
             >
               Patient Details
             </Button>
+
             
             <Button
               onClick={() => setActiveComponent('Prehospitaliere')}
