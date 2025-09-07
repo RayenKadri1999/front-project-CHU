@@ -12,7 +12,7 @@ import SubmitButtons from "../../components/shared/SubmitButtons";
 
 
 
-const DetailsPatientForm = ({handleClose,setSuccessMessage,idDossier}) => {
+const DetailsPatientForm = ({handleClose,setSuccessMessage,idDossier, mode = "Edit"}) => {
   const [patientData, setPatientData] = useState({
     Nom: "",
     Prenom: "",
@@ -227,7 +227,7 @@ const DetailsPatientForm = ({handleClose,setSuccessMessage,idDossier}) => {
 
   
     {isDataAvailable && 
-<SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+<SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
      }
     </form>
     

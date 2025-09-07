@@ -38,7 +38,7 @@ import apiServices from "../../services/api-services";
 
 
 
-export default function Imagerie() {
+export default function Imagerie({mode = "Edit"}) {
     const theme = createTheme({
         palette: {
             primary: {
@@ -99,37 +99,38 @@ export default function Imagerie() {
 
 
 
-    const handleChangecheck = (e, Data, setData, setcheckfunction, key) => {
-        const { name, id, checked } = e.target;
+const handleChangecheck = (e, Data, setData, setcheckfunction, key) => {
+  const { name, id, checked } = e.target; 
+  console.log("handleChangeCheck name:", name, "id:", id, "checked:", checked);
 
+  if (checked) {
+    // Update checkZone by id
+    setcheckfunction((prevData) => ({
+      ...prevData,
+      [id]: true,
+    }));
 
-        if (checked) {
-            setcheckfunction((prevData) => ({
-                ...prevData,
-                [id]: true,
-            }));
+    // Add to Details array by name
+    const updatedArray = [...Data[key], name];
+    setData((prevData) => ({
+      ...prevData,
+      [key]: updatedArray,
+    }));
+  } else {
+    // Uncheck in checkZone
+    setcheckfunction((prevData) => ({
+      ...prevData,
+      [id]: false,
+    }));
 
-            // Update the key in imagerieData with the new name added
-            const updatedArray = [...Data[key], name];
-
-            setData((prevData) => ({
-                ...prevData,
-                [key]: updatedArray,
-            }));
-        } else {
-            setcheckfunction((prevData) => ({
-                ...prevData,
-                [id]: false,
-            }));
-
-            const updatedArray = Data[key].filter(item => item !== name);
-
-            setData((prevData) => ({
-                ...prevData,
-                [key]: updatedArray,
-            }));
-        }
-    };
+    // Remove from Details array
+    const updatedArray = Data[key].filter((item) => item !== name);
+    setData((prevData) => ({
+      ...prevData,
+      [key]: updatedArray,
+    }));
+  }
+};
 
     const handleChange2 = (e,updateFunction) => {
         const { name, value } = e.target;
@@ -218,7 +219,7 @@ export default function Imagerie() {
                             />
                         </Box>
 
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
                         {successMessage && (
                             <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

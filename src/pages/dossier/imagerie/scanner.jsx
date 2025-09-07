@@ -28,7 +28,7 @@ import apiServices from "../../../services/api-services";
 import SubmitButtons from '../../../components/shared/SubmitButtons';
 import PdfButton from "../../../components/shared/PdfButton";
 
-const ScannerSection = ({ id, handleChange2 }) => {
+const ScannerSection = ({ id, handleChange2, mode = "Edit" }) => {
 
 
   const [isDataAvailable, setIsDataAvailable] = useState(false);
@@ -730,7 +730,7 @@ fetchData();
 </>
 
   }
-      <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+      <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
           {successMessage && (
 <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

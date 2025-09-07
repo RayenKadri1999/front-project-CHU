@@ -17,7 +17,7 @@ import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
 
-export default function EvolutionClassification({ commonState }) {
+export default function EvolutionClassification({ mode = "Edit" }) {
     const { idDossier, id } = useParams();
     const theme = createTheme({
         palette: {
@@ -257,6 +257,7 @@ export default function EvolutionClassification({ commonState }) {
                             isDataAvailable={isDataAvailable}
                             setIsEditable={setIsEditable}
                             isEditable={isEditable}
+                            mode={mode}
                         />
 
                         {successMessage && (

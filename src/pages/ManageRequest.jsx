@@ -90,18 +90,21 @@ const ManageRequests = () => {
     try {
    
       const result = await axios.get(`http://localhost:3000/api/request/get`, { headers: authHeader() });
-      setRequests(result.data);
+      setRequests(result.data.map(request => ({...request , fullname : request.Prenom + " " + request.Nom})));
     } catch (error) {
       alert(error);
     }
   };
 
+  useEffect(()=>{
+    console.log(requests);
+  },[requests])
   const columns = [
     { field: "_id", headerName: "ID Request", width: 170 },
-    { field: "patient", headerName: "Patient", width: 170 },
+    { field: "fullname", headerName: "Patient", width: 170 },
     { field: "createdAt", headerName: "Created", width: 170 },
       { field: "updatedAt", headerName: "Updated", width: 170 },
-    { field: "status", headerName: "Status", width: 170 },
+    { field: "reviewStatus", headerName: "Status", width: 170 },
     // { field: "dateNaissance", headerName: "Date de Naissance", width: 170 },
     // { field: "matricule", headerName: "Matricule", width: 130 },
     // { field: "aidantPrincipal", headerName: "Aidant Principal", width: 150 },
@@ -112,8 +115,8 @@ const ManageRequests = () => {
       width: 300,
       renderCell: (params) => (
         <div style={{ display: "flex", justifyContent: "space-around" }}>
-          <Button variant="text" onClick={() => navigate(`/edit/${params.row._id}`)}> {/* Use useNavigate to navigate */}
-          Dossier
+          <Button variant="text" onClick={() => navigate(`/evaluer/dossier/${params.row._id}`)}> {/* Use useNavigate to navigate */}
+          évaluer
           </Button>
           <Button variant="text" onClick={() => handleApprove(params.row._id)} className="text-red-500">
          Approuver

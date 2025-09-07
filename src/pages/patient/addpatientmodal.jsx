@@ -22,7 +22,7 @@ const AddPatientForm = ({handleClose,setSuccessMessage}) => {
     Adresse: "",
     aidantPrincipal: "",
     numeroAidantPrincipal: "",
-_id:"",
+numeroDossier:"",
   });
   const [error, setError] = useState(null);
 
@@ -56,8 +56,8 @@ _id:"",
         <TextField
                 label="Numéro dossier"
                 type="text"
-                name="_id"
-                value={patientData._id}
+                name="numeroDossier"
+                value={patientData.numeroDossier}
                 onChange={handleChange}
                 required
                 margin="normal"

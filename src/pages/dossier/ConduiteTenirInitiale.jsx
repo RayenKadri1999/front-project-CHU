@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import FormControl from "@mui/material/FormControl";
 import SubmitButtons from "../../components/shared/SubmitButtons";
@@ -24,7 +24,7 @@ import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
 import { useParams } from "react-router-dom";
 
-export default function PriseEnChargeAigue() {
+export default function PriseEnChargeAigue({mode = "Edit"}) {
     const { idDossier, id } = useParams(); //added id props
     const theme = createTheme({
         palette: {
@@ -271,7 +271,6 @@ loadData();
                 <Typography variant="h4" gutterBottom>
                     Prise en charge à la phase aigue
                 </Typography>
-                <ToastContainer />
 
                 {/* Box I: Pharmacologique */}
                 <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -1016,7 +1015,7 @@ loadData();
                 </Box>
 
 
-                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
 
                 {successMessage && (

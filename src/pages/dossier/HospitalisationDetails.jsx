@@ -23,7 +23,7 @@ import apiServices from "../../services/api-services";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 
-const HospitalisationDetails = () => {
+const HospitalisationDetails = ({mode = "Edit"}) => {
   const { id } = useParams();
 
   const theme = createTheme({

@@ -29,7 +29,7 @@ import apiServices from "../../services/api-services";
 
 
 
-export default function Prehospitaliere_Hematome({ commonState }) {
+export default function Prehospitaliere_Hematome({ mode = "Edit" }) {
     const { idDossier,id} = useParams();
     const [isEditable, setIsEditable] = useState(false);
     const [isDataAvailable, setIsDataAvailable] = useState(true);
@@ -283,7 +283,7 @@ export default function Prehospitaliere_Hematome({ commonState }) {
                                 />
                             )}
                         </Box>
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
 
                         {successMessage && (

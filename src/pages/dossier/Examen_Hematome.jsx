@@ -28,7 +28,7 @@ const theme = createTheme({
     },
 });
 
-export default function ExamenClinique_Hematome() {
+export default function ExamenClinique_Hematome({mode = "Edit"}) {
     const { idDossier,id} = useParams();
 
     const [isEditable, setIsEditable] = useState(false);
@@ -529,7 +529,7 @@ export default function ExamenClinique_Hematome() {
 
 
 
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
                         {successMessage && (
                             <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

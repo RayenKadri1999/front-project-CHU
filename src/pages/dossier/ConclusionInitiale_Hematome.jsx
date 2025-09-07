@@ -19,7 +19,7 @@ import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
 
 
-export default function ConclusionInitiale_Hematome() {
+export default function ConclusionInitiale_Hematome({mode = "Edit"}) {
     const theme = createTheme({
         palette: {
             primary: {
@@ -138,7 +138,7 @@ export default function ConclusionInitiale_Hematome() {
                 </Box>
 
 
-                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
                 {successMessage && (
                     <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

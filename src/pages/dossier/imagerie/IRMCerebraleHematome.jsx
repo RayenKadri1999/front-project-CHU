@@ -27,6 +27,7 @@ const IRM = ({
                  handleChange2,
 
                  handleChangecheck,
+                 mode = "Edit"
              }) => {
 
     const [isDataAvailable, setIsDataAvailable] = useState(false);
@@ -502,7 +503,7 @@ const IRM = ({
                             <PerfusionOrASLSection  id={id}    handleChange2={handleChange2} handleChangecheck={handleChangecheck} />
                         </>
                     }
-                    <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                    <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
                     {successMessage && (
                         <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
                     )}

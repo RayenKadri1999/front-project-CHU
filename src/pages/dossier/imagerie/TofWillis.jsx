@@ -1,4 +1,3 @@
-// TOFWillisSection.js
 import React, { useEffect, useState } from "react";
 import {
     Box,
@@ -10,15 +9,14 @@ import {
     RadioGroup,
     Alert,
 } from "@mui/material";
-import { ToastContainer, toast } from "react-toastify"; // Import Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import {  toast } from "react-toastify";
 import apiServices from "../../../services/api-services";
 import SubmitButtons from "../../../components/shared/SubmitButtons";
 
-const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
+const TOFWillisSection = ({ id, handleChange2, handleChangecheck, mode = "Edit" }) => {
     const tof_WillisDataInit = {
         status: "Normal",
-        Occlusin: "",
+        Occlusion: "",
         Stenose: "",
         StenosePercent: "",
         M1G: "",
@@ -77,9 +75,7 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
                 if (data) {
                     const updatedCheckZone = {};
                     Object.keys(checkZone).forEach((key) => {
-                        updatedCheckZone[key] = data.Details.includes(
-                            key.replace(/([A-Z])/g, " $1").trim()
-                        );
+                        updatedCheckZone[key] = data.Details.includes(key);
                     });
                     setCheckZone(updatedCheckZone);
                 }
@@ -88,15 +84,15 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
             }
         };
         fetchData();
-    }, []);
+    }, [id]); // also re-run if id changes
 
     const handleSubmit = (e) => {
         e.preventDefault();
         let updatedTof_WillisData = { ...tof_WillisData };
 
         if (tof_WillisData.status === "Normal") {
-            updatedTof_WillisData = { ...tof_WillisDataInit };
-            setTof_WillisData(tof_WillisDataInit);
+            updatedTof_WillisData = { ...tof_WillisDataInit, matricule: id };
+            setTof_WillisData({ ...tof_WillisDataInit, matricule: id });
         }
 
         apiServices
@@ -115,6 +111,7 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
             )
             .catch((err) => toast.error(err.message || "Failed to save data."));
     };
+
 
     const boxStyle = {
         display: "flex",
@@ -188,8 +185,7 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <ToastContainer /> {/* Add ToastContainer for displaying Toastify notifications */}
+        <Box >
             <Box sx={{ mt: 4, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
                 <Stack direction="row" spacing={4} alignItems="center">
                     <Typography variant="h6">TOF-Willis</Typography>
@@ -308,12 +304,13 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck }) => {
                 )}
                 {tof_WillisData.status === "Anormal" && renderSections(sections)}
                 <SubmitButtons
+                    handleSubmit={handleSubmit}
                     isDataAvailable={isDataAvailable}
                     setIsEditable={setIsEditable}
                     isEditable={isEditable}
                 />
             </Box>
-        </form>
+        </Box>
     );
 };
 

@@ -8,7 +8,7 @@ import Notifications from '../../../components/shared/Notifications';
 import apiServices from "../../../services/api-services";
 import SubmitButtons from '../../../components/shared/SubmitButtons';
 
-const FatSatSection = ({ id, handleChange2, handleChangecheck }) => {
+const FatSatSection = ({ id, handleChange2, handleChangecheck, mode="Edit" }) => {
   const [isDataAvailable, setIsDataAvailable] = useState(false);
 
 
@@ -56,7 +56,7 @@ const FatSatSection = ({ id, handleChange2, handleChangecheck }) => {
   }, []);
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
     let updatedFat_SATData = fat_SATData;
     
     if (fat_SATData.status === "Normal") {
@@ -64,14 +64,14 @@ const FatSatSection = ({ id, handleChange2, handleChangecheck }) => {
       updatedFat_SATData = fat_SATDataInit;
       setFat_SATData(fat_SATDataInit); 
     }
-    apiServices.handleSubmit(e, updatedFat_SATData, "imagerie/fatsat", setSuccessMessage, isDataAvailable,setIsDataAvailable, setIsEditable, setError, id);
+    apiServices.handleSubmit(null, updatedFat_SATData, "imagerie/fatsat", setSuccessMessage, isDataAvailable,setIsDataAvailable, setIsEditable, setError, id);
   }
 
 
   return (
 
 
-    <form onSubmit={handleSubmit}>
+    <Box>
       <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
 
         <Stack direction="row" spacing={4} alignItems="center">
@@ -181,13 +181,13 @@ const FatSatSection = ({ id, handleChange2, handleChangecheck }) => {
 </>
 }
 
-        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+        <SubmitButtons handleSubmit={handleSubmit} isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
         {successMessage && (
           <Notifications Message={successMessage} setMessage={setSuccessMessage} />
         )}
       </Box>
-    </form>
+    </Box>
   );
 };
 

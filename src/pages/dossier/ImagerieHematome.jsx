@@ -39,7 +39,7 @@ import TDMSection from "./imagerie/TDM";
 
 
 
-export default function ImagerieHematome() {
+export default function ImagerieHematome({mode = "Edit"}) {
     const theme = createTheme({
         palette: {
             primary: {
@@ -217,7 +217,7 @@ export default function ImagerieHematome() {
                             />
                         </Box>
 
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
                         {successMessage && (
                             <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

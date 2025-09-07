@@ -24,7 +24,7 @@ const theme = createTheme({
   },
 });
 
-export default function Biologie() {
+export default function Biologie({mode = "Edit"}) {
   const {  idDossier,id } = useParams();
   // const { userId, roles } = useAuth();
 
@@ -503,7 +503,7 @@ export default function Biologie() {
           </Stack> */}
 
 
-<SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+<SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
 {successMessage && (
   <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

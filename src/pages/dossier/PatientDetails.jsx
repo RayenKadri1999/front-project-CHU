@@ -15,7 +15,7 @@ import apiServices from "../../services/api-services";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 
-const PatientDetails = () => {
+const PatientDetails = ({mode = "Edit"}) => {
   const theme = createTheme({
     palette: {
       primary: {
@@ -231,6 +231,7 @@ const PatientDetails = () => {
                 isDataAvailable={isDataAvailable}
                 setIsEditable={setIsEditable}
                 isEditable={isEditable}
+                
             />
 
             {successMessage && (

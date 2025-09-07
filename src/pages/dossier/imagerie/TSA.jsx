@@ -8,7 +8,7 @@ import authHeader from '../../../services/auth-header';
 import Notifications from '../../../components/shared/Notifications';
 import apiServices from "../../../services/api-services";
 import SubmitButtons from '../../../components/shared/SubmitButtons';
-const TSASection = ({ id,handleChange2, handleChangecheck }) => {
+const TSASection = ({ id,handleChange2, handleChangecheck, mode = "Edit" }) => {
 
 
   const TSADataInit ={
@@ -48,7 +48,7 @@ const TSASection = ({ id,handleChange2, handleChangecheck }) => {
     }, []);
    
 
-    const handleSubmit = (e) => {
+    const handleSubmit = () => {
       let updatedTSAData = TSAData;
     
     if (TSAData.status === "Non") {
@@ -56,14 +56,14 @@ const TSASection = ({ id,handleChange2, handleChangecheck }) => {
       updatedTSAData = TSADataInit;
       setTSAData(TSADataInit); 
     }
-      apiServices.handleSubmit(e,updatedTSAData,"imagerie/tsa",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
+      apiServices.handleSubmit(null,updatedTSAData,"imagerie/tsa",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
      }
 
 
     return (
 
       
-    <form onSubmit={handleSubmit}>
+    <Box>
         <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
         <Stack direction="row" spacing={4} alignItems="center">
             <Typography variant="h6">TSA</Typography>
@@ -178,12 +178,12 @@ const TSASection = ({ id,handleChange2, handleChangecheck }) => {
 }
 
            
-      <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+      <SubmitButtons handleSubmit={handleSubmit} isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
           {successMessage && (
 <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
 )}
         </Box>
-        </form>
+        </Box>
     );
 };
 

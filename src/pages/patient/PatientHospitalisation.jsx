@@ -21,7 +21,7 @@ import ModalDialog from "../dossier/ModalDialog";
 import AddHospitalisationForm from "./addhospitalisationmodal";
 import dayjs from "dayjs";
 import Notifications from "../../components/shared/Notifications";
-import { ToastContainer, toast } from "react-toastify";
+import {toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
@@ -74,7 +74,7 @@ const ListHospitalisation = () => {
     { field: "dateEntree", headerName: "Date Etrée", width: 170 ,valueFormatter: (params) => { return params.value ? dayjs(params.value).format('DD-MM-YYYY') : ''; },},
 
     { field: "dateSortie", headerName: "Date Sortie", width: 170,valueFormatter: (params) => { return params.value ? dayjs(params.value).format('DD-MM-YYYY') : '';  }, },
-    { field: "status", headerName: "Status", width: 170 },
+    { field: "reviewStatus", headerName: "Status", width: 170 },
       {field: "TypeAVC", headerName: "Type de AVC", width: 170},
   {
       field: "actions",
@@ -154,7 +154,6 @@ const ListHospitalisation = () => {
       <Navbar />
       <Box height={30} />
       <Box sx={{ display: "flex" }}>
-       <ToastContainer/>
         
          <Sidenav />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>

@@ -1,659 +1,337 @@
 import React, { useEffect, useState } from "react";
-import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import TextField from "@mui/material/TextField";
-
-import Notifications from "../../components/shared/Notifications";
-import SubmitButtons from "../../components/shared/SubmitButtons";
+import { useParams } from "react-router-dom";
+import {
+    Box, Typography, Stack, FormControlLabel, Checkbox, FormGroup,
+    RadioGroup, Radio, TextField, Alert, Select, MenuItem, Grid
+} from "@mui/material";
 import apiServices from "../../services/api-services";
-
-
-// import Sidenav from "../../components/shared/Sidenav ";
-
-
-
-import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
-import { SendIcon } from "lucide-react";
-import authHeader from "../../services/auth-header";
-import { Checkbox, FormControlLabel, FormGroup, FormLabel, Grid, Radio, RadioGroup, TextareaAutosize, Typography ,Alert, Stack} from "@mui/material";
+import SubmitButtons from "../../components/shared/SubmitButtons";
+import Notifications from "../../components/shared/Notifications";
 import PdfButton from "../../components/shared/PdfButton";
 
-export default function Etiologie({ commonState }) {
- 
-   const { idDossier,id} = useParams();
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#0E8388",
-      },
-    },
-  });
+// Configuration data
+const TOAST_CONFIG = {
+    atherothrombotique: [
+        "Intracranien",
+        "Extracranien TSA",
+        "Crosse aortique",
+        "Plaque non stésnosante active"
+    ],
+    cardioembolique: [
+        "Fibrillation auriculaire",
+        "Valve Mecanique", 
+        "FEVG < 30%",
+        "IDM aigu",
+        "Akinesie Focale/anévrisme VG",
+        "Endocarthide infectueuse",
+        "Endocarthide non infectueuse",
+        "Tumeur intracardiaque",
+        "FOP Large/FOP-ASIA",
+        "Autre"
+    ]
+};
 
-  const [isEditable, setIsEditable] = useState(false);
-  const [isASCODEditable, setIsASCODEditable] = useState(false);
-  const [isDataAvailable, setIsDataAvailable] = useState(true);
-  const [isDataASCODAvailable, setIsDataASCODAvailable] = useState(true);
-  const [error, setError] = useState(null);
-  const [error2, setError2] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  
-  const [TOASTData, setTOASTData] = useState({
+const FIBRILLATION_OPTIONS = [
+    { name: "fibrillation_valvulaire", options: ["Valvulaire", "Non valvulaire"] },
+    { name: "fibrillation_type", options: ["Paroxystique", "Permanente"] },
+    { name: "fibrillation_anticoagulee", options: ["Anticoagulée", "Non anticoagulée"] }
+];
 
-  
-   
-    atherothrombotique:"non",
-      atherothrombotiqueContent:[],
-    info:"",
-    cardioembolique:"non",
-    cardioemboliqueContent:[],
-    fibrillation_valvulaire:"",
-    fibrillation_type:"",
-    fibrillation_anticoagulee:"",
+const INDETERMINE_OPTIONS = [
+    "ESUS",
+    "2 étiologies identifiés", 
+    "Bilan non exhaustif"
+];
+
+const ASCOD_FIELDS = ["A", "S", "C", "O", "D"];
+
+export default function Etiologie({ mode = "Edit" }) {
+    const { id } = useParams();
+    const theme = createTheme({ palette: { primary: { main: "#0E8388" } } });
+
+    // Consolidated state
+    const [state, setState] = useState({
+        isEditable: false,
+        isASCODEditable: false,
+        isDataAvailable: true,
+        isDataASCODAvailable: true,
+        error: null,
+        error2: null,
+        successMessage: "",
+        TOASTData: {
+            atherothrombotique: "non", atherothrombotiqueContent: [],
+            cardioembolique: "non", cardioemboliqueContent: [],
+            fibrillation_valvulaire: "", fibrillation_type: "", fibrillation_anticoagulee: "",
+            lacune: "non", Indetermine: "non", IndetermineContent: "",
+            info: "", matricule: id
+        },
+        ASCODData: { A: "", S: "", C: "", O: "", D: "", info: "", matricule: id }
+    });
+
+    // Generic handlers
+    const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
     
-    lacune:"non",
- 
-    Indetermine:"non",
-    IndetermineContent:"",
-    matricule: id,
-      
-     
-  });
+    const handleFormChange = (formType) => (e) => {
+        const { name, value } = e.target;
+        updateState({
+            [formType]: { ...state[formType], [name]: value }
+        });
+    };
 
-  const TOASTDataInit={
-
-
-      atherothrombotique:"non",
-      atherothrombotiqueContent:[],
-    info:"",
-    cardioembolique:"non",
-    cardioemboliqueContent:[],
-
-    fibrillation_valvulaire:"",
-    fibrillation_type:"",
-      fibrillation_anticoagulee:"",
-    
-    lacune:"non",
- 
-    Indetermine:"non",
-    IndetermineContent:"",
-    matricule: id,
-      
-     
-  }
-
-  const [ASCODData, setASCODData] = useState({
-
-  
-   
-    A:"",
-    S:"",
-    C:"",
-    O:"",
-    D:"",
-   
-   info:"",
-    matricule: id,
-      
-     
-  });
-
-  
-  
-
-  
-  
-
-  const handleChange = (e,updateFunction) => {
-    const { name, value } = e.target;
-    
-    updateFunction((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-
-
-
-  const handleChangecheck = (e, Data, setData, key) => {
-    const { name,checked } = e.target;
-
-
-    if (checked) {
-
-        const updatedArray = [...Data[key], name];
-
-        setData((prevData) => ({
-            ...prevData,
-            [key]: updatedArray,
-        }));
-    } else {
-
-
-        const updatedArray = Data[key].filter(item => item !== name);
-
-        setData((prevData) => ({
-            ...prevData,
-            [key]: updatedArray,
-        }));
-        if(name=="Fibrillation auriculaire"){
-          setTOASTData((prevData) => ({
-            ...prevData,
-            fibrillation_valvulaire:"",
-            fibrillation_type:"",
-            fibrillation_anticoagulee:"",
-          }));
+    const handleCheckboxToggle = (formType, field) => (e) => {
+        const { name, checked } = e.target;
+        
+        if (field) {
+            // Array field (content)
+            const currentArray = state[formType][field] || [];
+            const newArray = checked 
+                ? [...currentArray, name]
+                : currentArray.filter(item => item !== name);
+            
+            updateState({
+                [formType]: { 
+                    ...state[formType], 
+                    [field]: newArray,
+                    // Clear fibrillation data if unchecking Fibrillation auriculaire
+                    ...(name === "Fibrillation auriculaire" && !checked && {
+                        fibrillation_valvulaire: "",
+                        fibrillation_type: "", 
+                        fibrillation_anticoagulee: ""
+                    })
+                }
+            });
+        } else {
+            // Boolean field
+            updateState({
+                [formType]: { 
+                    ...state[formType], 
+                    [name]: checked ? "oui" : "non",
+                    // Clear content if unchecking parent
+                    ...(!checked && [`${name}Content`] && { [`${name}Content`]: [] })
+                }
+            });
         }
-    }
-};
+    };
 
-const handleChangecheckLacune = (e,setData) => {
-  const { name, checked } = e.target;
-
-
-
-  
-      // Update the key in imagerieData with the new name added
-      
-
-      setData((prevData) => ({
-          ...prevData,
-          [name]: checked ? "oui" :"non",
-      }));
- 
-};
-
-  
-const handleChangecheck2 = (e,setData) => {
-  const { name, checked } = e.target;
-
-
-      // Update the key in imagerieData with the new name added
-      
-
-      setData((prevData) => ({
-          ...prevData,
-          [name]: checked ? "oui" :"non",
-      })); 
-      if(!checked){
-     
-        setData((prevData) => ({
-          ...prevData,
-          [`${name}Content`]: TOASTDataInit[`${name}Content`],
-      })); 
-
-      }
- 
-};
-
-
-
-
-const handleSubmitToast = (e) => {
-  apiServices.handleSubmit(e,TOASTData,"etiologie/toast",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
- }
-
- useEffect(() => {
-  // const fetchData = async () => {
-   apiServices.loadDossierDetails(setTOASTData,"etiologie/toast",setIsDataAvailable,setError,id);
-
- 
-   apiServices.loadDossierDetails(setASCODData,"etiologie/ascod",setIsDataASCODAvailable,setError2,id);
-}, []);
-
-
-const handleSubmitAscod = (e) => {
-  apiServices.handleSubmit(e,ASCODData,"etiologie/ascod",setSuccessMessage,isDataASCODAvailable,setIsDataASCODAvailable,setIsASCODEditable,setError2,id);
- }
-
-
-
-
-  return (
-<>
-
-<ThemeProvider theme={theme}>
-  
-{error && <Alert severity="info">{error}</Alert>}
-      {/* <Patientbar id={id}/> */}
-      
-      
-    {/* ----------------TOAST---------------------------- */}
-      <form onSubmit={handleSubmitToast}>
-      <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-      
-       
-      <Box
-           sx={{ display: "flex", flexDirection: "row", alignItems: "center"  }}>
-        
-        <Typography variant="h4" >
-            TOAST
-          </Typography>
-          <PdfButton pdfUrl="../pdf/TOAST.pdf"  />
-</Box>
-<Stack direction="row" spacing={1} alignItems="center" mt={3}>
-            {/* Si athérothrombotique  */}
-            <FormControlLabel 
-                        control={
-                        <Checkbox   name="atherothrombotique"
-                            disabled={!isEditable}
-                               
-                            checked={TOASTData.atherothrombotique==="oui"}
-                            onChange={(event) => handleChangecheck2(event,setTOASTData)}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         />
-
+    const handleSubmit = (formType, endpoint) => (e) => {
+        const stateKeys = formType === 'TOASTData' 
+            ? { available: 'isDataAvailable', editable: 'isEditable', error: 'error' }
+            : { available: 'isDataASCODAvailable', editable: 'isASCODEditable', error: 'error2' };
             
-            <Typography variant="h6" marginTop={5}>Athérothrombotique</Typography>
-            </Stack>
+        apiServices.handleSubmit(
+            e, state[formType], endpoint, 
+            (msg) => updateState({ successMessage: msg }),
+            state[stateKeys.available],
+            (val) => updateState({ [stateKeys.available]: val }),
+            (val) => updateState({ [stateKeys.editable]: val }),
+            (err) => updateState({ [stateKeys.error]: err }),
+            id
+        );
+    };
 
-            {TOASTData.atherothrombotique==="oui" &&
-            <FormGroup sx={{marginLeft:5}}>
-                    <FormControlLabel 
-                        control={
-                        <Checkbox   name="Intracranien"
-                            disabled={!isEditable}
-                                id="intracranien"
-                            checked={TOASTData.atherothrombotiqueContent.includes("Intracranien")}
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Intracranien" />
-
-                     <FormControlLabel 
-                        control={
-                        <Checkbox   name="Extracranien TSA"
-                            disabled={!isEditable}
-                                id="extracranienTSA"
-                            checked={TOASTData.atherothrombotiqueContent.includes("Extracranien TSA")}
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Extracranien TSA" />
-
-                           <FormControlLabel 
-                        control={
-                        <Checkbox   name="Crosse aortique"
-                            disabled={!isEditable}
-                                id="Crosseaortique"
-                            checked={TOASTData.atherothrombotiqueContent.includes("Crosse aortique")}
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Crosse aortique" />
-
-                        <FormControlLabel 
-                        control={
-                        <Checkbox   name="Plaque non stésnosante active"
-                            id="plaquenonStésnosante"
-                            disabled={!isEditable}
-                            checked={TOASTData.atherothrombotiqueContent.includes("Plaque non stésnosante active")}
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"atherothrombotiqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Plaque non stésnosante active" />
-
-                  
-            </FormGroup>
-}
+    // Reusable components
+    const CheckboxSection = ({ title, field, options, showSubOptions = false }) => (
+        <>
             <Stack direction="row" spacing={1} alignItems="center" mt={3}>
-            <FormControlLabel 
-                        control={
-                        <Checkbox   name="cardioembolique"
-                            disabled={!isEditable}
-                               
-                            checked={TOASTData.cardioembolique==="oui"} 
-                            onChange={(event) => handleChangecheck2(event,setTOASTData)}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         />
-<Typography variant="h6" marginTop={5}>Cardioembolique</Typography>
-</Stack>
-
-{TOASTData.cardioembolique==="oui" &&
-            <FormGroup sx={{marginLeft:5}}>
-                    <FormControlLabel 
-                        control={
-                        <Checkbox   name="Fibrillation auriculaire"
-                            disabled={!isEditable}
-                            
-                           
-                            checked={TOASTData.cardioemboliqueContent.includes("Fibrillation auriculaire")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Fibrillation auriculaire" />
-
-                           {/* Normal / Anormal Radio Group */}
-                           {TOASTData.cardioemboliqueContent.includes("Fibrillation auriculaire") &&
-                           <>
-      <RadioGroup 
-      row 
-      
-      name="fibrillation_valvulaire" 
-
-       value={TOASTData.fibrillation_valvulaire} 
-    
-       onChange={(event) => handleChange(event, setTOASTData)}
-    sx={{ marginLeft:5, }}
-      >
-        <FormControlLabel value="Valvulaire" control={<Radio />} label="Valvulaire" required disabled ={!isEditable } />
-        <FormControlLabel value="Non valvulaire" control={<Radio />} label="Non valvulaire" required disabled ={!isEditable }  />
-      </RadioGroup>
-     
-
-      <RadioGroup 
-      row 
-    
-      name="fibrillation_type" 
-  
-       value={TOASTData.fibrillation_type} 
-    
-       onChange={(event) => handleChange(event, setTOASTData)}
-    sx={{ marginLeft:5, }}
-      >
-        <FormControlLabel value="Paroxystique" control={<Radio />} label="Paroxystique" required disabled ={!isEditable } />
-        <FormControlLabel value="Permanente" control={<Radio />} label="Permanente" required disabled  ={!isEditable }  />
-      </RadioGroup>
-
-
-      <RadioGroup 
-      row 
-    
-      name="fibrillation_anticoagulee"
-    
-       value={TOASTData.fibrillation_anticoagulee}
-    
-       onChange={(event) => handleChange(event, setTOASTData)}
-    sx={{ marginLeft:5, }}
-      >
-        <FormControlLabel value="Anticoagulée" control={<Radio />} label="Anticoagulée" required disabled ={!isEditable } />
-        <FormControlLabel value="Non anticoagulée" control={<Radio />} label="Non anticoagulée" required disabled ={!isEditable  }  />
-      </RadioGroup>
-      </>
-                           }
-                     <FormControlLabel 
-                        control={
-                        <Checkbox   name="Valve Mecanique"
-                            disabled={!isEditable}
-                             
-                            checked={TOASTData.cardioemboliqueContent.includes("Valve Mecanique")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Valve Mecanique" />
-
-                           <FormControlLabel 
-                        control={
-                        <Checkbox   name="FEVG < 30%"
-                            disabled={!isEditable}
-                                
-                                checked={TOASTData.cardioemboliqueContent.includes("FEVG < 30%")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="FEVG < 30%" />
-
-                        <FormControlLabel 
-                        control={
-                        <Checkbox   name="IDM aigu"
-                            
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("IDM aigu")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="IDM aigu" />
-
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Akinesie Focale/anévrisme VG"
-                      
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("Akinesie Focale/anévrisme VG")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")} 
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Akinesie Focale/anévrisme VG" />
-
-
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Endocarthide infectueuse"
-                           
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("Endocarthide infectueuse")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Endocarthide infectueuse" />
-
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Endocarthide non infectueuse"
-                           
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("Endocarthide non infectueuse")}  
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Endocarthide non infectueuse" />
-
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Tumeur intracardiaque"
-                          
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("Tumeur intracardiaque")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Tumeur intracardiaque" />
-
-
-
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="FOP Large/FOP-ASIA"
-                           
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("FOP Large/FOP-ASIA")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="FOP Large/FOP-ASIA" />
-
-                   
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Autre"
-                           
-                            disabled={!isEditable}
-                            checked={TOASTData.cardioemboliqueContent.includes("Autre")} 
-                            onChange={(event) => handleChangecheck(event, TOASTData,setTOASTData,"cardioemboliqueContent")}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         label="Autre" />
-
-            </FormGroup>
-}
-              {" "}
-            
-              <Box height={10} />
-
-              <Stack direction="row" spacing={1} alignItems="center" mt={3}>
-              <FormControlLabel 
-                        control={
-                        <Checkbox   name="lacune"
-                            disabled={!isEditable}
-                         
-                            checked={TOASTData.lacune==="oui"} 
-                            onChange={(event) => handleChangecheckLacune(event,setTOASTData)}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            name={field}
+                            disabled={!state.isEditable}
+                            checked={state.TOASTData[field] === "oui"}
+                            onChange={handleCheckboxToggle('TOASTData')}
                         />
-                <Typography variant="h6">Lacune</Typography>
-          </Stack>
-              <Box height={10} />
-
-              <Stack direction="row" spacing={1} alignItems="center" mt={3}>
-                
-             
-<FormControlLabel 
-                        control={
-                        <Checkbox   name="Indetermine"
-                            disabled={!isEditable}
-                               
-                            checked={TOASTData.Indetermine==="oui"}
-                            onChange={(event) => handleChangecheck2(event,setTOASTData)}
-                            inputProps={{ 'aria-label': 'controlled' }} />}
-                         />
-                          <Typography variant="h6">Indéterminée</Typography>
-</Stack>
-{TOASTData.Indetermine ==="oui" &&
-<RadioGroup 
-      column 
-      id="IndetermineContent"
-      name="IndetermineContent"
-
-       value={TOASTData.IndetermineContent}
-    
-       onChange={(event) => handleChange(event, setTOASTData)}
-    sx={{ marginLeft:5, }}
-      >
-        <FormControlLabel value="ESUS" control={<Radio />} label="ESUS:Bilan étiologique négatif" required disabled ={!isEditable } />
-        <FormControlLabel value="2 étiologies identifiés" control={<Radio />} label="2 étiologies identifiés" required disabled ={!isEditable }  />
-        <FormControlLabel value="Bilan non exhaustif" control={<Radio />} label="Bilan non exhaustif" required disabled ={!isEditable}  />
-
-      </RadioGroup>
-}
-<Box height={10} />
-
-
-              <Box sx={{ mt: 2 }}>
-        <TextField
-          name="info"
-          label="informations complémentaires"
-          disabled={!isEditable}
-          value={TOASTData.info}
-          onChange={(event) => handleChange(event, setTOASTData)}
-          multiline
-          rows={6}
-          variant="outlined"
-          fullWidth
-        />
-      </Box>
-          
-          <Box height={10} />
-
-          
-        {/* </Box> */}
-      
-
-  
-     
-    
-        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
-
-{successMessage && (
-  <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
-  )}
-                
-             
-                </Box>
-      </form>
-
-
-   {/* ----------------ASCOD---------------------------- */}
-
-  
-
-
-      <form onSubmit={handleSubmitAscod}>
-      <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-      {error2 && <Alert severity="info">{error2}</Alert>}
-      <Box
-           sx={{ display: "flex", flexDirection: "row", alignItems: "center", marginBottom: 5 }}>
-        
-        <Typography variant="h4"  >
-            ASCOD
-          </Typography>
-          <PdfButton pdfUrl="../pdf/ASCOD.pdf"  />
-</Box>
-         
-        
-         
+                    }
+                />
+                <Typography variant="h6">{title}</Typography>
+            </Stack>
             
-           
-   {/* Repeat similar structure for other labels and fields */}
-   {[
-   { label: 'A (Atheroclerosis)', name1: 'A'},
-   { label: 'S (Small-vessel disease)', name1: 'S'},
-   { label: 'C (Cardiac pathology) ', name1: 'C' },
-   { label: 'O (Other cause)', name1: 'O' },
-   { label: 'D (Dissection)', name1: 'D'},
-   
-     // Add other fields similarly
-   ].map((group, index) => (
-     <React.Fragment key={index}>
-       <Grid item xs={12} md={4}>
-         <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
-           <span>{group.label}</span>
-         </Box>
-       </Grid>
-       <Grid item xs={12} md={8} container spacing={2}>
-         <Grid item xs={6} >
-          
-            <Select
-                 labelId="demosimpleselectlabel"
-                 id="demosimpleselect"
-                 value={ASCODData[group.name1]}
-                 onChange={(event) => handleChange(event, setASCODData)}
-                 name={group.name1}
-                 label={`${group.label} 1`}
-                //  InputProps={{ readOnly: !isASCODEditable }}
-                 disabled={!isASCODEditable}
-                 fullWidth
-                 
-               >
-           
-                 <MenuItem value={1}>1 </MenuItem>
-                 <MenuItem value={2}>2  </MenuItem>
-                 <MenuItem value={3}>3 </MenuItem>
-               
-               </Select>
-         </Grid>
-        
-       </Grid>
-     </React.Fragment>
-   ))}
+            {state.TOASTData[field] === "oui" && options && (
+                <FormGroup sx={{ marginLeft: 5 }}>
+                    {options.map(option => (
+                        <div key={option}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        name={option}
+                                        disabled={!state.isEditable}
+                                        checked={state.TOASTData[`${field}Content`]?.includes(option)}
+                                        onChange={handleCheckboxToggle('TOASTData', `${field}Content`)}
+                                    />
+                                }
+                                label={option}
+                            />
+                            {showSubOptions && option === "Fibrillation auriculaire" && 
+                             state.TOASTData[`${field}Content`]?.includes(option) && (
+                                <Box sx={{ ml: 5 }}>
+                                    {FIBRILLATION_OPTIONS.map(group => (
+                                        <RadioGroup
+                                            key={group.name}
+                                            row
+                                            name={group.name}
+                                            value={state.TOASTData[group.name]}
+                                            onChange={handleFormChange('TOASTData')}
+                                        >
+                                            {group.options.map(opt => (
+                                                <FormControlLabel
+                                                    key={opt}
+                                                    value={opt}
+                                                    control={<Radio />}
+                                                    label={opt}
+                                                    disabled={!state.isEditable}
+                                                />
+                                            ))}
+                                        </RadioGroup>
+                                    ))}
+                                </Box>
+                            )}
+                        </div>
+                    ))}
+                </FormGroup>
+            )}
+        </>
+    );
 
+    useEffect(() => {
+        apiServices.loadDossierDetails(
+            (data) => updateState({ TOASTData: data }),
+            "etiologie/toast", 
+            (val) => updateState({ isDataAvailable: val }),
+            (err) => updateState({ error: err }), 
+            id
+        );
+        apiServices.loadDossierDetails(
+            (data) => updateState({ ASCODData: data }),
+            "etiologie/ascod",
+            (val) => updateState({ isDataASCODAvailable: val }),
+            (err) => updateState({ error2: err }),
+            id
+        );
+    }, []);
 
-              <Box sx={{ mt: 2 }}>
-        <TextField
-          name="info"
-          label="informations complémentaires"
-          disabled={!isASCODEditable}
-          value={ASCODData.info}
-          onChange={(event) => handleChange(event, setASCODData)}
-          multiline
-          rows={6}
-          variant="outlined"
-          fullWidth
-        />
-      </Box>
-          
-          <Box height={10} />
+    return (
+        <ThemeProvider theme={theme}>
+            {/* TOAST Form */}
+            <form onSubmit={handleSubmit('TOASTData', 'etiologie/toast')}>
+                <Box sx={{ mt: 4, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
+                    {state.error && <Alert severity="info">{state.error}</Alert>}
+                    
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                        <Typography variant="h4">TOAST</Typography>
+                        <PdfButton pdfUrl="../pdf/TOAST.pdf" />
+                    </Box>
 
-          
-        {/* </Box> */}
-      
+                    <CheckboxSection 
+                        title="Athérothrombotique" 
+                        field="atherothrombotique" 
+                        options={TOAST_CONFIG.atherothrombotique} 
+                    />
+                    
+                    <CheckboxSection 
+                        title="Cardioembolique" 
+                        field="cardioembolique" 
+                        options={TOAST_CONFIG.cardioembolique}
+                        showSubOptions={true}
+                    />
+                    
+                    <CheckboxSection title="Lacune" field="lacune" />
+                    
+                    <CheckboxSection title="Indéterminée" field="Indetermine" />
+                    {state.TOASTData.Indetermine === "oui" && (
+                        <RadioGroup
+                            name="IndetermineContent"
+                            value={state.TOASTData.IndetermineContent}
+                            onChange={handleFormChange('TOASTData')}
+                            sx={{ ml: 5 }}
+                        >
+                            {INDETERMINE_OPTIONS.map(option => (
+                                <FormControlLabel
+                                    key={option}
+                                    value={option}
+                                    control={<Radio />}
+                                    label={option === "ESUS" ? "ESUS:Bilan étiologique négatif" : option}
+                                    disabled={!state.isEditable}
+                                />
+                            ))}
+                        </RadioGroup>
+                    )}
 
-  
-     
-        <SubmitButtons isDataAvailable={isDataASCODAvailable} setIsEditable={setIsASCODEditable} isEditable={isASCODEditable}/>
+                    <TextField
+                        name="info"
+                        label="informations complémentaires"
+                        disabled={!state.isEditable}
+                        value={state.TOASTData.info}
+                        onChange={handleFormChange('TOASTData')}
+                        multiline rows={6} variant="outlined" fullWidth
+                        sx={{ mt: 2 }}
+                    />
 
-{successMessage && (
-  <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
-  )}
-
-                
-             
+                    <SubmitButtons
+                        isDataAvailable={state.isDataAvailable}
+                        setIsEditable={(val) => updateState({ isEditable: val })}
+                        isEditable={state.isEditable}
+                        mode={mode}
+                    />
                 </Box>
-      </form>
+            </form>
 
+            {/* ASCOD Form */}
+            <form onSubmit={handleSubmit('ASCODData', 'etiologie/ascod')}>
+                <Box sx={{ mt: 4, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
+                    {state.error2 && <Alert severity="info">{state.error2}</Alert>}
+                    
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                        <Typography variant="h4">ASCOD</Typography>
+                        <PdfButton pdfUrl="../pdf/ASCOD.pdf" />
+                    </Box>
 
+                    {ASCOD_FIELDS.map(field => (
+                        <Grid container spacing={2} key={field} sx={{ mb: 2 }}>
+                            <Grid item xs={4}>
+                                <Typography>{field} ({
+                                    {A: 'Atheroclerosis', S: 'Small-vessel disease', C: 'Cardiac pathology', 
+                                     O: 'Other cause', D: 'Dissection'}[field]
+                                })</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Select
+                                    name={field}
+                                    value={state.ASCODData[field]}
+                                    onChange={handleFormChange('ASCODData')}
+                                    disabled={!state.isASCODEditable}
+                                    fullWidth
+                                >
+                                    {[1,2,3].map(num => <MenuItem key={num} value={num}>{num}</MenuItem>)}
+                                </Select>
+                            </Grid>
+                        </Grid>
+                    ))}
 
-      </ThemeProvider>
- 
-      </>    
-  );
+                    <TextField
+                        name="info"
+                        label="informations complémentaires"
+                        disabled={!state.isASCODEditable}
+                        value={state.ASCODData.info}
+                        onChange={handleFormChange('ASCODData')}
+                        multiline rows={6} variant="outlined" fullWidth
+                        sx={{ mt: 2 }}
+                    />
+
+                    <SubmitButtons
+                        isDataAvailable={state.isDataASCODAvailable}
+                        setIsEditable={(val) => updateState({ isASCODEditable: val })}
+                        isEditable={state.isASCODEditable}
+                    />
+                </Box>
+            </form>
+
+            {state.successMessage && (
+                <Notifications
+                    Message={state.successMessage}
+                    setMessage={(msg) => updateState({ successMessage: msg })}
+                />
+            )}
+        </ThemeProvider>
+    );
 }

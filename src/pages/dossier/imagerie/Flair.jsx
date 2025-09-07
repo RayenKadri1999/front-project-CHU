@@ -15,6 +15,7 @@ const FLAIR = ({
 
                  handleChange2,
                  handleChangecheck,
+                 mode="Edit"
                }) => {
 
   const [flairData, setFlairData] = useState({
@@ -73,7 +74,7 @@ const FLAIR = ({
   }, []);
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
     let updatedFlairData = flairData;
 
     if (flairData.Status === "Normale") {
@@ -81,12 +82,12 @@ const FLAIR = ({
       updatedFlairData = flairDataInit;
       setFlairData(flairDataInit);
     }
-    apiServices.handleSubmit(e, flairData, "imagerie/flair", setSuccessMessage, isDataAvailable,setIsDataAvailable, setIsEditable,setError, id);
+    apiServices.handleSubmit(null, flairData, "imagerie/flair", setSuccessMessage, isDataAvailable,setIsDataAvailable, setIsEditable,setError, id);
   }
 
 
   return (
-      <form onSubmit={handleSubmit}>
+      <Box >
 
 
         <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
@@ -386,7 +387,7 @@ const FLAIR = ({
                     <TextField
                         required
                         type="number"
-                        name="Score_Collatéralité"
+                        name="Score_Collateralite"
 
                         value={flairData.Score_Collateralite}
                         onChange={(event) => handleChange2(event, setFlairData)}
@@ -548,14 +549,14 @@ const FLAIR = ({
           </Box>
 
 
-          <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+          <SubmitButtons handleSubmit={handleSubmit} isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
 
           {successMessage && (
               <Notifications Message={successMessage} setMessage={setSuccessMessage} />
           )}
         </Box>
-      </form>
+      </Box>
   );
 };
 export default FLAIR;

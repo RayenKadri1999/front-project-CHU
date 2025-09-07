@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Sidenav from "../../components/shared/Sidenav";
 import Navbar from "../../components/shared/Navbar";
@@ -106,7 +106,6 @@ const PatientForm = () => {
       <Box height={30} />
       <Box sx={{ display: "flex" }}>
         <Sidenav />
-        <ToastContainer />
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <h1>Nouveau patient :</h1>
           <form onSubmit={handleSubmit}>

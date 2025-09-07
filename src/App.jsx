@@ -32,6 +32,8 @@ import PdfButton from "./components/shared/PdfButton";
 import PatientHospitalisation from "./pages/patient/PatientHospitalisation";
 import Generate from "./pages/Generate";
 import PatientDossierHematome from "./pages/dossier/PatientDossierHematome";
+import ReviewHospitalisations from "./pages/review/ReviewHospitalisations";
+import { ToastContainer } from "react-toastify";
 
 
 export default function App() {
@@ -71,6 +73,9 @@ export default function App() {
           <Route path="/ManageRequest" element={<ManageRequests />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/Generate" element={<Generate />} />
+          <Route path="/evaluer/dossier/:idDossier" element={<ReviewHospitalisations />} />
+          <Route path="/evaluer/hospitalisation/:idDossier/:id/:TypeAVC" element={<PatientDossierWrapper mode="Review" />} />
+          {/* <Route path="/review" element={} */}
           {/* Add a catch-all route to redirect to the login page */}
           <Route path="*" element={<Navigate to="/SeConnecter" />} />
 
@@ -79,19 +84,20 @@ export default function App() {
         </Routes>
        
       </Router>
+      <ToastContainer />
      
     </>
   );
 }
-function PatientDossierWrapper() {
+function PatientDossierWrapper({mode = "Edit"}) {
   const { TypeAVC } = useParams();
   const decodedTypeAVC = decodeURIComponent(TypeAVC);
 
   // Conditionally render based on the TypeAVC
   if (decodedTypeAVC  === "Infarctus cérébral") {
-    return <PatientDossier />;
+    return <PatientDossier mode={mode} />;
   } else if (decodedTypeAVC  === "Hématome cérébral") {
-    return <PatientDossierHematome />;
+    return <PatientDossierHematome mode={mode} />;
   } else {
     return <Navigate to="/SeConnecter" />; // Redirect if the TypeAVC is not valid
   }

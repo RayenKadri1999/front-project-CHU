@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Alert, Checkbox, FormControlLabel, FormGroup, Grid, Typography, TextField } from "@mui/material"; // **Import TextField**
 import PdfButton from "../../components/shared/PdfButton"; //If needed
 
-export default function Etiologie_Hematome({ commonState }) {
+export default function Etiologie_Hematome({ mode = "Edit" }) {
     const { idDossier, id } = useParams();
     const theme = createTheme({
         palette: {
@@ -278,7 +278,7 @@ export default function Etiologie_Hematome({ commonState }) {
                             </Grid>
                         </Grid>
 
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} />
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode} />
 
                         {successMessage && <Notifications Message={successMessage} setMessage={setSuccessMessage} />}
                     </Box>

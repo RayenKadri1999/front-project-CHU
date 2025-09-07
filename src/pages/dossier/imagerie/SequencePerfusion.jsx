@@ -8,7 +8,7 @@ import Notifications from '../../../components/shared/Notifications';
 import apiServices from "../../../services/api-services";
 import SubmitButtons from '../../../components/shared/SubmitButtons';
 
-const PerfusionOrASLSection = ({   id , handleChange2, handleChangecheck }) => {
+const PerfusionOrASLSection = ({   id , handleChange2, handleChangecheck, mode = "Edit" }) => {
 
 
 
@@ -95,7 +95,7 @@ HyperperfusionD :false,
       }, []);
      
 
-      const handleSubmit = (e) => {
+      const handleSubmit = () => {
         let updatedSequencePerfusionData = SequencePerfusionData;
     
         if (SequencePerfusionData.status === "Non") {
@@ -103,12 +103,12 @@ HyperperfusionD :false,
           updatedSequencePerfusionData = SequencePerfusionInitData;
           setSequencePerfusionData(SequencePerfusionInitData); 
         }
-        apiServices.handleSubmit(e,updatedSequencePerfusionData,"imagerie/sequenceperfusion",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
+        apiServices.handleSubmit(null,updatedSequencePerfusionData,"imagerie/sequenceperfusion",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
        }
 
     return (
 
-      <form onSubmit={handleSubmit}>
+      <Box>
         <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
         <Stack direction="row" spacing={4} alignItems="center">
             <Typography variant="h6">Séquence de perfusion ou ASL</Typography>
@@ -201,13 +201,13 @@ HyperperfusionD :false,
       </Box>
       </>}
           
-                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                <SubmitButtons handleSubmit={handleSubmit} isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
           {successMessage && (
 <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
 )}
         </Box>
-        </form>
+        </Box>
     );
 };
 

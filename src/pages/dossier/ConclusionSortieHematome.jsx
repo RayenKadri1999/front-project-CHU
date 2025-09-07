@@ -20,7 +20,9 @@ import apiServices from "../../services/api-services";
 import ModalDialog from "./ModalDialog";
 import AddNihssForm from "./AddNihssForm";
 import DetailsNihssForm from "./DetailsNihssForm";
-export default function ConclusionSortieHematome() {
+
+
+export default function ConclusionSortieHematome({mode = "Edit"}) {
     const {  idDossier,id } = useParams();
     const theme = createTheme({
         palette: {
@@ -494,7 +496,7 @@ export default function ConclusionSortieHematome() {
                                 Ajouter Recommandation
                             </Button>
                         </Box>
-                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+                        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
                         {successMessage && (
                             <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

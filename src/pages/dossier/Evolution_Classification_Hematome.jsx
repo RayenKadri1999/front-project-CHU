@@ -17,7 +17,7 @@ import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
 
-export default function Evolution_Classification_Hematome({ commonState }) {
+export default function Evolution_Classification_Hematome({ mode = "Edit" }) {
     const { idDossier, id } = useParams();
     const theme = createTheme({
         palette: {

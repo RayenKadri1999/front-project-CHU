@@ -17,7 +17,7 @@ import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
 
-export default function ExamensComplementaires({ commonState }) {
+export default function ExamensComplementaires({ mode = "Edit" }) {
  
    const { idDossier,id} = useParams();
   const theme = createTheme({
@@ -392,7 +392,7 @@ export default function ExamensComplementaires({ commonState }) {
 
   
      
-        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
+        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
 
 {successMessage && (
   <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

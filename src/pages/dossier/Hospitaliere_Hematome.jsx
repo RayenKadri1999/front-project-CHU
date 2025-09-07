@@ -17,9 +17,15 @@ import authHeader from "../../services/auth-header";
 import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
-import { FormControlLabel, FormLabel, Radio, RadioGroup, TextareaAutosize ,Alert} from "@mui/material";
+import {
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    TextareaAutosize,
+    Alert,
+} from "@mui/material";
 import PdfButton from "../../components/shared/PdfButton";
-
 
 const theme = createTheme({
     palette: {
@@ -29,49 +35,47 @@ const theme = createTheme({
     },
 });
 
-
-export default function Hospitaliere_Hematome() {
-    const { idDossier,id} = useParams();
+export default function Hospitaliere_Hematome({ mode = "Edit" }) {
+    const { idDossier, id } = useParams();
     const initialHospitaliereData = {
-        Allergies: '',
-        HTA: '',
-        Hypercholestérolémie: '',
-        Diabète: '',
-        Fibrillation_auriculaire: '',
-        Ancienneté_fibrillation: '',
-        SAS: '',
-        SAS_appareillé: '',
-        AIT: '',
-        AVC: '',
-        Cardiopathie_ischémique: '',
-        Artériopathie: '',
-        Autres_antécédents: '',
-        Vit: '',
-        Latéralité: '',
-        Profession: '',
-        Autonomie: '',
-        Tabagisme: '',
-        Chicha: '',
-        Neffa: '',
-        Consommation_alcool: '',
-        Rankin_préAVC: '',
-        GIR: '',
-        Poids: '',
-        Taille: '',
-        IMC: '',
+        Allergies: "",
+        HTA: "",
+        Hypercholestérolémie: "",
+        Diabète: "",
+        Fibrillation_auriculaire: "",
+        Ancienneté_fibrillation: "",
+        SAS: "",
+        SAS_appareillé: "",
+        AIT: "",
+        AVC: "",
+        Cardiopathie_ischémique: "",
+        Artériopathie: "",
+        Autres_antécédents: "",
+        Vit: "",
+        Latéralité: "",
+        Profession: "",
+        Autonomie: "",
+        Tabagisme: "",
+        Chicha: "",
+        Neffa: "",
+        Consommation_alcool: "",
+        Rankin_préAVC: "",
+        GIR: "",
+        Poids: "",
+        Taille: "",
+        IMC: "",
 
-        HistoireMaladie:"",
-        TraitementEntrée:"",
+        HistoireMaladie: "",
+        TraitementEntrée: "",
 
         matricule: id,
     };
-
 
     const [isEditable, setIsEditable] = useState(false);
     const [isDataAvailable, setIsDataAvailable] = useState(true);
     const [hospitaliereData, setHospitaliereData] = useState({
         ...initialHospitaliereData,
-        patient: id
+        patient: id,
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -114,6 +118,16 @@ export default function Hospitaliere_Hematome() {
         }));
     };
 
+    const ApproveHospitaliere = () => {
+        axios.put(
+            `http://localhost:3000/review/${tabName}/${
+                hospitaliereData?._id || ""
+            }/reviewInfo/state`,
+            { status: "Accepté" }, 
+            { headers: authHeader() }
+        );
+    };
+
     // const handleSubmit = async (e) => {
     //   e.preventDefault();
     //   const url = isDataAvailable
@@ -149,13 +163,28 @@ export default function Hospitaliere_Hematome() {
     // };
 
     const handleSubmit = (e) => {
-        apiServices.handleSubmit(e,hospitaliereData,"hospitaliere",setSuccessMessage,isDataAvailable,setIsDataAvailable,setIsEditable,setError,id);
-    }
+        apiServices.handleSubmit(
+            e,
+            hospitaliereData,
+            "hospitaliere",
+            setSuccessMessage,
+            isDataAvailable,
+            setIsDataAvailable,
+            setIsEditable,
+            setError,
+            id
+        );
+    };
 
     useEffect(() => {
-        apiServices.loadDossierDetails(setHospitaliereData,"hospitaliere",setIsDataAvailable,setError,id)
+        apiServices.loadDossierDetails(
+            setHospitaliereData,
+            "hospitaliere",
+            setIsDataAvailable,
+            setError,
+            id
+        );
     }, []);
-
 
     if (loading) {
         return <Typography variant="h6">Loading...</Typography>;
@@ -165,50 +194,139 @@ export default function Hospitaliere_Hematome() {
         <ThemeProvider theme={theme}>
             <Box sx={{ display: "flex", flexDirection: "column", p: 3 }}>
                 <form onSubmit={handleSubmit}>
-
-
                     <Typography variant="h4" gutterBottom>
                         Hospitalière
                     </Typography>
-                    {error && <Alert severity="error">{error}</Alert>}
-                    <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+                    {error && (
+                        <Alert
+                            severiApproveHospitaliere
+                            ApproveHospitalierety="error"
+                        >
+                            {error}
+                        </Alert>
+                    )}
+                    <Box
+                        sx={{
+                            mt: 4,
+                            p: 2,
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                        }}
+                    >
                         <Typography variant="h6" gutterBottom>
                             Antécédents
                         </Typography>
 
                         <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                             {[
-                                { label: "Allergies", name: "Allergies", type: "radio", options: ["Oui", "Non"] },
-                                { label: "HTA", name: "HTA", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Hypercholestérolémie", name: "Hypercholestérolémie", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Diabète", name: "Diabète", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Fibrillation auriculaire", name: "Fibrillation_auriculaire", type: "radio", options: ["paroxystique", "permanente"] },
-                                { label: "Ancienneté de fibrillation", name: "Ancienneté_fibrillation", type: "radio", options: ["Oui", "Non"] },
-                                { label: "SAS", name: "SAS", type: "radio", options: ["Oui", "Non"] },
-                                { label: "SAS appareillé", name: "SAS_appareillé", type: "radio", options: ["Oui", "Non"] },
-                                { label: "AIT", name: "AIT", type: "radio", options: ["Oui", "Non"] },
-                                { label: "AVC", name: "AVC", type: "radio", options: ["ischémique", "hémorragique"] },
-                                { label: "Cardiopathie ischémique", name: "Cardiopathie_ischémique", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Artériopathie des membres inférieurs", name: "Artériopathie", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Autres antécédents", name: "Autres_antécédents" },
-                            ].map((field) => (
+                                {
+                                    label: "Allergies",
+                                    name: "Allergies",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "HTA",
+                                    name: "HTA",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Hypercholestérolémie",
+                                    name: "Hypercholestérolémie",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Diabète",
+                                    name: "Diabète",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Fibrillation auriculaire",
+                                    name: "Fibrillation_auriculaire",
+                                    type: "radio",
+                                    options: ["paroxystique", "permanente"],
+                                },
+                                {
+                                    label: "Ancienneté de fibrillation",
+                                    name: "Ancienneté_fibrillation",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "SAS",
+                                    name: "SAS",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "SAS appareillé",
+                                    name: "SAS_appareillé",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "AIT",
+                                    name: "AIT",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "AVC",
+                                    name: "AVC",
+                                    type: "radio",
+                                    options: ["ischémique", "hémorragique"],
+                                },
+                                {
+                                    label: "Cardiopathie ischémique",
+                                    name: "Cardiopathie_ischémique",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Artériopathie des membres inférieurs",
+                                    name: "Artériopathie",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Autres antécédents",
+                                    name: "Autres_antécédents",
+                                },
+                            ].map((field) =>
                                 field.type === "radio" ? (
-                                    <Box key={field.name} sx={{ m: 1, width: "25ch" }}>
+                                    <Box
+                                        key={field.name}
+                                        sx={{ m: 1, width: "25ch" }}
+                                    >
                                         <FormControl fullWidth>
-                                            <FormLabel component="legend">{field.label}</FormLabel>
+                                            <FormLabel component="legend">
+                                                {field.label}
+                                            </FormLabel>
                                             <RadioGroup
                                                 aria-required
                                                 name={field.name}
-                                                value={hospitaliereData[field.name] || ""}
+                                                value={
+                                                    hospitaliereData[
+                                                        field.name
+                                                    ] || ""
+                                                }
                                                 onChange={handleChange}
-
                                             >
                                                 {field.options.map((option) => (
                                                     <FormControlLabel
                                                         key={option}
                                                         required
                                                         value={option}
-                                                        control={<Radio disabled={!isEditable} />}
+                                                        control={
+                                                            <Radio
+                                                                disabled={
+                                                                    !isEditable
+                                                                }
+                                                            />
+                                                        }
                                                         label={option}
                                                     />
                                                 ))}
@@ -219,7 +337,6 @@ export default function Hospitaliere_Hematome() {
                                     <TextField
                                         key={field.name}
                                         label={field.label}
-
                                         name={field.name}
                                         onChange={handleChange}
                                         value={hospitaliereData[field.name]}
@@ -231,148 +348,232 @@ export default function Hospitaliere_Hematome() {
                                         }}
                                     />
                                 )
-                            ))}
+                            )}
                         </Box>
                     </Box>
 
-                    <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+                    <Box
+                        sx={{
+                            mt: 4,
+                            p: 2,
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                        }}
+                    >
                         <Typography variant="h6" gutterBottom mt={2}>
                             Mode de vie
                         </Typography>
 
                         <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                             {[
-                                { label: "Vit", name: "Vit", type: "select", options: ["seul", "en famille", "en institution", "Autre"] },
+                                {
+                                    label: "Vit",
+                                    name: "Vit",
+                                    type: "select",
+                                    options: [
+                                        "seul",
+                                        "en famille",
+                                        "en institution",
+                                        "Autre",
+                                    ],
+                                },
                                 { label: "Profession", name: "Profession" },
                                 { label: "Autonomie", name: "Autonomie" },
 
-                                { label: "Latéralité", name: "Latéralité" , type: "radio", options: ["Droite", "Gauche"]},
-                                { label: "Tabagisme", name: "Tabagisme", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Chicha", name: "Chicha", type: "radio", options: ["Oui", "Non"] },
-                                { label: "Neffa", name: "Neffa", type: "radio", options: ["Oui", "Non"]},
-                                { label: "Consommation d'alcool", name:"Consommation_alcool" , type: "radio", options: ["Oui", "Non"] },
+                                {
+                                    label: "Latéralité",
+                                    name: "Latéralité",
+                                    type: "radio",
+                                    options: ["Droite", "Gauche"],
+                                },
+                                {
+                                    label: "Tabagisme",
+                                    name: "Tabagisme",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Chicha",
+                                    name: "Chicha",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Neffa",
+                                    name: "Neffa",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
+                                {
+                                    label: "Consommation d'alcool",
+                                    name: "Consommation_alcool",
+                                    type: "radio",
+                                    options: ["Oui", "Non"],
+                                },
 
-                                { label: "Rankin préAVC", name: "Rankin_préAVC", type: "number", max: 6 },
-                                { label: "GIR", name: "GIR", type: "number", max: 6 },
-                                { label: "Poids", name: "Poids", type: "number", unit: "kg" },
-                                { label: "Taille", name: "Taille", type: "number", unit: "cm" },
+                                {
+                                    label: "Rankin préAVC",
+                                    name: "Rankin_préAVC",
+                                    type: "number",
+                                    max: 6,
+                                },
+                                {
+                                    label: "GIR",
+                                    name: "GIR",
+                                    type: "number",
+                                    max: 6,
+                                },
+                                {
+                                    label: "Poids",
+                                    name: "Poids",
+                                    type: "number",
+                                    unit: "kg",
+                                },
+                                {
+                                    label: "Taille",
+                                    name: "Taille",
+                                    type: "number",
+                                    unit: "cm",
+                                },
                                 { label: "IMC", name: "IMC", type: "number" },
-                            ].map((field) => (
+                            ].map((field) =>
                                 field.type === "radio" ? (
-                                    <Box key={field.name} sx={{ m: 1, width: "25ch" }}>
+                                    <Box
+                                        key={field.name}
+                                        sx={{ m: 1, width: "25ch" }}
+                                    >
                                         <FormControl fullWidth>
-                                            <FormLabel component="legend">{field.label}</FormLabel>
+                                            <FormLabel component="legend">
+                                                {field.label}
+                                            </FormLabel>
                                             <RadioGroup
-
                                                 name={field.name}
-                                                value={hospitaliereData[field.name] || ""}
+                                                value={
+                                                    hospitaliereData[
+                                                        field.name
+                                                    ] || ""
+                                                }
                                                 onChange={handleChange}
-
                                             >
                                                 {field.options.map((option) => (
                                                     <FormControlLabel
                                                         required
                                                         key={option}
                                                         value={option}
-                                                        control={<Radio disabled={!isEditable} />}
+                                                        control={
+                                                            <Radio
+                                                                disabled={
+                                                                    !isEditable
+                                                                }
+                                                            />
+                                                        }
                                                         label={option}
                                                     />
                                                 ))}
                                             </RadioGroup>
                                         </FormControl>
                                     </Box>
-                                ) : (
-                                    field.name === "GIR" ? (
+                                ) : field.name === "GIR" ? (
+                                    <TextField
+                                        key={field.name}
+                                        label={field.label}
+                                        name={field.name}
+                                        onChange={handleChange}
+                                        value={hospitaliereData[field.name]}
+                                        disabled={!isEditable}
+                                        required
+                                        sx={{ m: 1, width: "25ch" }}
+                                        type={field.type || "text"}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <PdfButton pdfUrl="/pdf/GIR.pdf" />
+                                            ),
 
-                                            <TextField
-                                                key={field.name}
+                                            readOnly: !isEditable,
+                                        }}
+                                        inputProps={{
+                                            min: field.min || 0,
+                                            max: field.max || 100,
+                                        }}
+                                    />
+                                ) : field.name === "Rankin_préAVC" ? (
+                                    <TextField
+                                        key={field.name}
+                                        label={field.label}
+                                        name={field.name}
+                                        onChange={handleChange}
+                                        value={hospitaliereData[field.name]}
+                                        disabled={!isEditable}
+                                        required
+                                        sx={{ m: 1, width: "25ch" }}
+                                        type={field.type || "text"}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <PdfButton pdfUrl="/pdf/mRS.pdf" />
+                                            ),
+
+                                            readOnly: !isEditable,
+                                        }}
+                                        inputProps={{
+                                            min: field.min || 0,
+                                            max: field.max || 100,
+                                        }}
+                                    />
+                                ) : field.type === "select" ? (
+                                    <Box
+                                        key={field.name}
+                                        sx={{ m: 1, width: "25ch" }}
+                                    >
+                                        <FormControl fullWidth>
+                                            <FormLabel>{field.label}</FormLabel>
+                                            <Select
                                                 label={field.label}
                                                 name={field.name}
+                                                value={
+                                                    hospitaliereData[
+                                                        field.name
+                                                    ] || ""
+                                                }
                                                 onChange={handleChange}
-                                                value={hospitaliereData[field.name]}
                                                 disabled={!isEditable}
                                                 required
-                                                sx={{ m: 1,  width: "25ch" }}
-                                                type={field.type || "text"}
-                                                InputProps={{
-
-                                                    endAdornment:   <PdfButton pdfUrl="/pdf/GIR.pdf" />,
-
-                                                    readOnly: !isEditable,
-                                                }}
-                                                inputProps={{
-                                                    min: field.min || 0,
-                                                    max: field.max || 100,
-                                                }}
-                                            />
-                                        ) :
-                                        field.name === "Rankin_préAVC" ? (
-
-                                                <TextField
-                                                    key={field.name}
-                                                    label={field.label}
-                                                    name={field.name}
-                                                    onChange={handleChange}
-                                                    value={hospitaliereData[field.name]}
-                                                    disabled={!isEditable}
-                                                    required
-                                                    sx={{ m: 1,  width: "25ch" }}
-                                                    type={field.type || "text"}
-                                                    InputProps={{
-
-                                                        endAdornment:   <PdfButton pdfUrl="/pdf/mRS.pdf" />,
-
-                                                        readOnly: !isEditable,
-                                                    }}
-                                                    inputProps={{
-                                                        min: field.min || 0,
-                                                        max: field.max || 100,
-                                                    }}
-                                                />)
-
-                                            : field.type === "select" ? (
-                                                <Box key={field.name} sx={{ m: 1, width: "25ch" }}>
-                                                    <FormControl fullWidth>
-                                                        <FormLabel>{field.label}</FormLabel>
-                                                        <Select
-                                                            label={field.label}
-                                                            name={field.name}
-                                                            value={hospitaliereData[field.name] || ""}
-                                                            onChange={handleChange}
-                                                            disabled={!isEditable}
-                                                            required
-                                                        >
-                                                            {field.options.map((option) => (
-                                                                <MenuItem key={option} value={option}>{option}</MenuItem>
-                                                            ))}
-                                                        </Select>
-                                                    </FormControl>
-                                                </Box>
-
-
-                                            ):(
-                                                <TextField
-                                                    key={field.name}
-                                                    label={field.label}
-                                                    name={field.name}
-                                                    onChange={handleChange}
-                                                    value={hospitaliereData[field.name]}
-                                                    disabled={!isEditable}
-                                                    sx={{ m: 1, width: "25ch" }}
-                                                    type={field.type || "text"}
-                                                    InputProps={{
-                                                        endAdornment: field.unit && (
-                                                            <InputAdornment position="end">{field.unit}</InputAdornment>
-                                                        ),
-                                                        readOnly: !isEditable,
-                                                    }}
-                                                    inputProps={{
-                                                        min: field.min || 0,
-                                                        max: field.max || 300,
-                                                    }}
-                                                />)
-
-                                )))}
+                                            >
+                                                {field.options.map((option) => (
+                                                    <MenuItem
+                                                        key={option}
+                                                        value={option}
+                                                    >
+                                                        {option}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Box>
+                                ) : (
+                                    <TextField
+                                        key={field.name}
+                                        label={field.label}
+                                        name={field.name}
+                                        onChange={handleChange}
+                                        value={hospitaliereData[field.name]}
+                                        disabled={!isEditable}
+                                        sx={{ m: 1, width: "25ch" }}
+                                        type={field.type || "text"}
+                                        InputProps={{
+                                            endAdornment: field.unit && (
+                                                <InputAdornment position="end">
+                                                    {field.unit}
+                                                </InputAdornment>
+                                            ),
+                                            readOnly: !isEditable,
+                                        }}
+                                        inputProps={{
+                                            min: field.min || 0,
+                                            max: field.max || 300,
+                                        }}
+                                    />
+                                )
+                            )}
                         </Box>
                     </Box>
 
@@ -389,7 +590,6 @@ export default function Hospitaliere_Hematome() {
                         disabled={!isEditable}
                     />
 
-
                     <Typography variant="h6" gutterBottom>
                         Traitement à l'entrée
                     </Typography>
@@ -403,13 +603,20 @@ export default function Hospitaliere_Hematome() {
                         disabled={!isEditable}
                     />
 
-                    <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>
-
+                    <SubmitButtons
+                        isDataAvailable={isDataAvailable}
+                        setIsEditable={setIsEditable}
+                        isEditable={isEditable}
+                        mode={mode}
+                        onApprove={ApproveHospitaliere}
+                    />
 
                     {successMessage && (
-                        <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
+                        <Notifications
+                            Message={successMessage}
+                            setMessage={setSuccessMessage}
+                        />
                     )}
-
                 </form>
             </Box>
         </ThemeProvider>

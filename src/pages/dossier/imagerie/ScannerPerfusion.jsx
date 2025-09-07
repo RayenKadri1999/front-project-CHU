@@ -14,7 +14,7 @@ import apiServices from "../../../services/api-services";
 import SubmitButtons from '../../../components/shared/SubmitButtons';
 
 
-const PerfusionScanner = ({ id, handleChange2 }) => {
+const PerfusionScanner = ({ id, handleChange2, mode = "Edit" }) => {
 
 
     
@@ -131,7 +131,7 @@ const PerfusionScanner = ({ id, handleChange2 }) => {
 </>
 }
            
-                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable}/>          {successMessage && (
+                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>          {successMessage && (
 <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
 )}
         </Box>

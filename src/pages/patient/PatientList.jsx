@@ -52,7 +52,7 @@ const ListPatients = () => {
   };
 
   const columns = [
-    { field: "numero_dossier", headerName: "Numéro", width: 140 },
+    { field: "numeroDossier", headerName: "Numéro", width: 140 },
     { field: "Nom", headerName: "Nom", width: 170 },
     { field: "Prenom", headerName: "Prénom", width: 170 },
     { 
@@ -112,11 +112,15 @@ const ListPatients = () => {
       } else if (option === "Prenom") {
         return patient.Prenom.toLowerCase().includes(query);
       } else if (option === "ID") {
-        return patient.numero_dossier?.toLowerCase().includes(query);
+        return patient.numeroDossier?.toLowerCase().includes(query);
       }
       return false;
     });
   });
+  useEffect(()=>{
+    console.log(filteredPatients);
+    console.log(patients);
+  },[patients])
 
   return (
     <>

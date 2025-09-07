@@ -17,13 +17,13 @@ import {
   FormControl,
 } from "@mui/material";
 import Notifications from '../../../components/shared/Notifications';
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import apiServices from "../../../services/api-services";
 import SubmitButtons from "../../../components/shared/SubmitButtons";
 import PdfButton from "../../../components/shared/PdfButton";
 
-const T2SwanSection = ({ id, handleChange2 }) => {
+const T2SwanSection = ({ id, handleChange2, mode = "Edit" }) => {
   const t2_SwanDatainit = {
     status: "Normal",
     Profonds: "",
@@ -53,17 +53,18 @@ const T2SwanSection = ({ id, handleChange2 }) => {
     setIsEditable((prev) => !prev);
   };
 
-  const totalCalc = () => {
-    const total = ["Profonds", "Sous_corticaux"].reduce((acc, key) => {
-      const value = parseInt(t2_SwanData[key], 10);
-      return acc + (isNaN(value) ? 0 : value);
-    }, 0);
-    setT2_SwanData((prevState) => ({ ...prevState, Total: total }));
-  };
+useEffect(() => {
+  const total = ["Profonds", "Sous_corticaux"].reduce((acc, key) => {
+    const value = parseInt(t2_SwanData[key], 10);
+    return acc + (isNaN(value) ? 0 : value);
+  }, 0);
 
-  useEffect(() => {
-    totalCalc();
-  }, [t2_SwanData]);
+  // Only update if total changed to avoid unnecessary re-renders
+  if (t2_SwanData.Total !== total) {
+    setT2_SwanData((prevState) => ({ ...prevState, Total: total }));
+  }
+}, [t2_SwanData.Profonds, t2_SwanData.Sous_corticaux]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,8 +89,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
     fetchData();
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = () => {
 
     let updatedt2_SwanData = { ...t2_SwanData };
 
@@ -100,7 +100,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
 
     apiServices
         .handleSubmit(
-            e,
+            null,
             updatedt2_SwanData,
             "imagerie/t2swan",
             () => toast.success("Données enregistrées avec succès!"),
@@ -147,8 +147,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
   };
 
   return (
-      <form onSubmit={handleSubmit}>
-        <ToastContainer />
+      <Box>
         <Box sx={{ mt: 4, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
           <Stack direction="row" spacing={4} alignItems="center">
             <Typography variant="h6">T2 ou SWAN</Typography>
@@ -334,6 +333,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
           )}
 
           <SubmitButtons
+              handleSubmit={handleSubmit}
               isDataAvailable={isDataAvailable}
               setIsEditable={setIsEditable}
               isEditable={isEditable}
@@ -342,7 +342,7 @@ const T2SwanSection = ({ id, handleChange2 }) => {
               <Notifications Message={successMessage} setMessage={setSuccessMessage} />
           )}
         </Box>
-      </form>
+      </Box>
   );
 };
 
