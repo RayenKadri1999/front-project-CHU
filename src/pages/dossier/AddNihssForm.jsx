@@ -1,111 +1,69 @@
-import { Button, styled, TextField ,Typography} from "@mui/material";
+import { Button, styled, TextField, Typography, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from "@mui/material";
 import Box from "@mui/material/Box";
-
 import Stack from "@mui/material/Stack";
-
-import  React, { useState,useEffect } from "react";
-
+import React, { useState, useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
-
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-
-
 import dayjs from "dayjs";
-
-
 import { Grid, MenuItem, Select } from "@mui/material";
-import { SendIcon,PlusIcon, InfoIcon } from "lucide-react";
-
+import { SendIcon, PlusIcon, InfoIcon } from "lucide-react";
 import authHeader from "../../services/auth-header";
 import PdfButton from "../../components/shared/PdfButton";
-const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
 
+const AddNihssForm = ({ handleClose, setData, setNihssData, setSuccessMessage }) => {
   const [PreData, setPreData] = useState({
-    
     categorie: '',
-
-  // Date and Heure
-  date: new Date(),
-
-
-  // Total auto.
-  totalAuto: '',
-
-  // Subcategories
-  vigilance: '',//0..4
-  orientation: '',//0..4
-  commandes: '',//0..4
-  oculomotricite: '',//0..4
-  champVisuel: '',//0..4
-  paralysieFaciale: '',//0..4
-//tous les champs //0..4
-
-
-  // Sa Motricité membre sup.G
-  motriciteMembreSupG: '',
-
-  // Motricité membre sup. (D)
-  motriciteMembreSupD: '',
-
-  // Motricité membre int. (G)
-  motriciteMembreIntG: '',
-
-  // Motricité membre int. (D)
-  motriciteMembreIntD: '',
-
-  ataxie: '',
-  sensibilite: '',
-  langage: '',
-  dysarthrie: '',
-  extinctionNegligence: '',
-
-   
+    date: new Date(),
+    totalAuto: '',
+    vigilance: '',
+    orientation: '',
+    commandes: '',
+    oculomotricite: '',
+    champVisuel: '',
+    paralysieFaciale: '',
+    motriciteMembreSupG: '',
+    motriciteMembreSupD: '',
+    motriciteMembreIntG: '',
+    motriciteMembreIntD: '',
+    ataxie: '',
+    sensibilite: '',
+    langage: '',
+    dysarthrie: '',
+    extinctionNegligence: '',
   });
 
-  
-
-  
   useEffect(() => {
     totalCalc();
   }, [PreData]);
- 
 
-  const handleChangeDate =(name) => (value) =>  {
-    
+  const handleChangeDate = (name) => (value) => {
     console.log(PreData[name]);
     const updatedDateTime = dayjs(PreData[name]).set('year', value.year())
-    .set('month', value.month())
-    .set('date', value.date());
+      .set('month', value.month())
+      .set('date', value.date());
     console.log((updatedDateTime));
 
-
-   
     setPreData((prevData) => ({
-      
       ...prevData,
       [name]: updatedDateTime,
-    })
-    );
-  
+    }));
   };
-  const handleChangeTime =(name) => (value)  => {
-   
+
+  const handleChangeTime = (name) => (value) => {
     const updatedDateTime = dayjs(PreData[name]).set('hour', value.hour())
-    .set('minute', value.minute());
-  
-    
-    
+      .set('minute', value.minute());
+
     setPreData((prevData) => ({
       ...prevData,
-      [name]:updatedDateTime ,
-    })
-    );
+      [name]: updatedDateTime,
+    }));
   };
+
   const [error, setError] = useState(null);
+
   const totalCalc = () => {
     const total = [
       'vigilance',
@@ -134,284 +92,224 @@ const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
     }));
   };
 
-  // useEffect(() => {
-  //   setPreData((prevState) => ({
-  //     ...prevState,  // Keep the existing values
-  //     ...NihssData     // Overwrite with values from PreData (only if they exist in PreData)
-  //   }));
-  // }, []);
-
-
   const [createSuccess, setCreateSuccess] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPreData((prevData) => ({
       ...prevData,
       [name]: value,
-    })
-    );
+    }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
-  //   try {
-  //     const response = await fetch("http://localhost:3000/api/nihss/create", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         'x-access-token': authHeader()['x-access-token']
-  //       },
-  //       body: JSON.stringify(PreData)
-  //     });
+  // Handle radio button changes for score fields
+  const handleRadioChange = (event) => {
+    const { name, value } = event.target;
+    setPreData((prevData) => ({
+      ...prevData,
+      [name]: parseInt(value, 10), // Convert to number to match original behavior
+    }));
+  };
 
-
-  //     if (response.status === 201) {
-  //       // Patient updated successfully
-  //       setCreateSuccess(true);
-  //       console.log("Patient record create successfully!");
-  //       const { nihssId } = await response.json();
-
-  //       setExamenCliniqueData(prevData => ({
-  //         ...prevData,
-  //         NIHSSInitial: PreData.totalAuto,
-  //         idNIHSS:nihssId,
-  //       }));
-      
-  //       handleClose();
-  //     } else {
-  //       console.error("Patient record create failed:", response);
-  //       handleClose();
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in handleSubmit:", error);
-  //     handleClose();
-  //   }
-  // };
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    
-        // Patient updated successfully
-        setCreateSuccess(true);
-     
-        setNihssData((prevState) => ({
-          ...prevState,  // Keep the existing values
-          ...PreData     // Overwrite with values from PreData (only if they exist in PreData)
-        }));
-    
-        setData(prevData => ({
-          ...prevData,
-          NIHSSValue: PreData.totalAuto,
-         
-        }));
 
-      
-        handleClose();
-      
-     
+    setCreateSuccess(true);
+
+    setNihssData((prevState) => ({
+      ...prevState,
+      ...PreData
+    }));
+
+    setData(prevData => ({
+      ...prevData,
+      NIHSSValue: PreData.totalAuto,
+    }));
+
+    handleClose();
   };
 
   return (
-    
-    
-     <form onSubmit={handleSubmit}>
-        <Box
-           sx={{ display: "flex", flexDirection: "row", alignItems: "center"  }}>
-            <Typography variant="h4" > Nouveau NIHSS </Typography>
-            <PdfButton pdfUrl="../../../public/pdf/ScoreNIHSS.pdf"  />
-  
-   </Box>
-      
-         <Box
-           sx={{ display: "flex", flexDirection: "row", alignItems: "center",p: 2  }}>
-  
-   
- <Grid container spacing={2} alignItems="center">
+    <form onSubmit={handleSubmit}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <Typography variant="h4"> Nouveau NIHSS </Typography>
+        <PdfButton pdfUrl="../../../public/pdf/ScoreNIHSS.pdf" />
+      </Box>
 
-   {/* Example 1: Label with Two Related Fields */}
-  
-  
-   <Grid item xs={4} >
-       <Typography variant="h6" >  Categorie  </Typography>
-   </Grid>
-
-   
-     <Grid item xs={8} >
-       <TextField
-         fullWidth
-         label="Categorie"
-         type="text"
-         name="categorie"
-         value={PreData.categorie}
-         onChange={handleChange}
-required
-         margin="normal"
-       />
-     </Grid>
- 
-
-     
-  
-
-   {/* Example 2: Label with Two Related Fields */}
-   <Grid item xs={4} >
-     
-    
-       <Typography variant="h6" >  Date  </Typography>
-     
-   </Grid>
- 
-     <Grid item xs={8}>
-     <LocalizationProvider dateAdapter={AdapterDayjs}>
-     <DatePicker
-                        label="Date.."
-                        name="date"
-                        onChange={handleChangeDate('date')}
-                        required
-                      
-                         value={dayjs(PreData.date)}
-                          format="DD/MM/YYYY"
-                      />
-                      </LocalizationProvider>
-       
-     </Grid>
-     
-
-
-
-   <Grid item xs={4}>
-   
-
-       <Typography variant="h6" >  Heure  </Typography>
-     
-   </Grid>
-
-     <Grid item xs={8}>
-       
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["TimePicker"]}>
-                        <TimePicker
-                      label="Heure"
-                         
-                      required
-                          value={dayjs(PreData.date)}
-                          
-                          onChange={handleChangeTime('date')}
-                  
-                        
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-     </Grid>
-     
- 
-
-
-   {/* Repeat similar structure for other labels and fields */}
-   {[
-   { label: 'Vigilance', name1: 'vigilance'},
-   { label: 'Orientation', name1: 'orientation'},
-   { label: 'Commandes', name1: 'commandes' },
-   { label: 'Oculomotricité', name1: 'oculomotricite' },
-   { label: 'Champ Visuel', name1: 'champVisuel'},
-   { label: 'Paralysie Faciale', name1: 'paralysieFaciale' },
-
-   { label: 'Motricité Membre Sup (G)', name1: 'motriciteMembreSupG'},
-   { label: 'Motricité Membre Sup (D)', name1: 'motriciteMembreSupD' },
-
-       { label: 'Motricité Membre Int (G)', name: 'motriciteMembreIntG' },
-       { label: 'Motricité Membre Int (D)', name: 'motriciteMembreIntD' },
-
-   { label: 'Ataxie', name1: 'ataxie' },
-   { label: 'Sensibilité', name1: 'sensibilite' },
-   { label: 'Langage', name1: 'langage' },
-   { label: 'Dysarthrie', name1: 'dysarthrie'},
-
-   { label: 'Extinction Négligence', name1: 'extinctionNegligence' },
-
-     // Add other fields similarly
-   ].map((group, index) => (
-     <React.Fragment key={index}>
-       <Grid item xs={4} >
-        
-        
-           <Typography variant="h6" >  {group.label}  </Typography>
-       
-       </Grid>
-      
-         <Grid item xs={8} >
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", p: 2 }}>
+        <Grid container spacing={2} alignItems="center">
           
-            <Select
-                 labelId="demosimpleselectlabel"
-                 id="demosimpleselect"
-                 value={PreData[group.name1]}
-                 onChange={handleChange}
-                 name={group.name1}
-                 label={`${group.label} 1`}
+          {/* Categorie */}
+          <Grid item xs={4}>
+            <Typography variant="h6">Categorie</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              label="Categorie"
+              type="text"
+              name="categorie"
+              value={PreData.categorie}
+              onChange={handleChange}
+              required
+              margin="normal"
+            />
+          </Grid>
 
-                 fullWidth
-                 
-               >
-                  <MenuItem value={0}>0 </MenuItem>
-                 <MenuItem value={1}>1 </MenuItem>
-                 <MenuItem value={2}>2  </MenuItem>
-                 <MenuItem value={3}>3 </MenuItem>
-                 <MenuItem value={4}>4  </MenuItem>
-               </Select>
-         </Grid>
-        
-    
-     </React.Fragment>
-   ))}
+          {/* Date */}
+          <Grid item xs={4}>
+            <Typography variant="h6">Date</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date.."
+                name="date"
+                onChange={handleChangeDate('date')}
+                required
+                value={dayjs(PreData.date)}
+                format="DD/MM/YYYY"
+              />
+            </LocalizationProvider>
+          </Grid>
 
+          {/* Heure */}
+          <Grid item xs={4}>
+            <Typography variant="h6">Heure</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["TimePicker"]}>
+                <TimePicker
+                  label="Heure"
+                  required
+                  value={dayjs(PreData.date)}
+                  onChange={handleChangeTime('date')}
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+          </Grid>
 
-    {/* Total */}
-    <Grid item xs={4} >
-  
-  <Typography variant="h4" >  Total  </Typography>
-
-</Grid>
-
-<Grid item xs={8}>
-  <TextField
-    fullWidth
-    label="Total"
-    type="number"
-    name="totalAuto"
-    value={PreData.totalAuto}
-  
-   disabled={true}
-    margin="normal"
-  />
-</Grid>
-
- </Grid>
-
-
-
-
-
-</Box>
-<Box height={30} />
-               <Stack direction="row" spacing={2}>
+          {/* Score Fields with Radio Buttons */}
+          {[
+            { label: 'Vigilance', name1: 'vigilance' },
+            { label: 'Orientation', name1: 'orientation' },
+            { label: 'Commandes', name1: 'commandes' },
+            { label: 'Oculomotricité', name1: 'oculomotricite' },
+            { label: 'Champ Visuel', name1: 'champVisuel' },
+            { label: 'Paralysie Faciale', name1: 'paralysieFaciale' },
+            { label: 'Motricité Membre Sup (G)', name1: 'motriciteMembreSupG' },
+            { label: 'Motricité Membre Sup (D)', name1: 'motriciteMembreSupD' },
+            { label: 'Motricité Membre Int (G)', name1: 'motriciteMembreIntG' },
+            { label: 'Motricité Membre Int (D)', name1: 'motriciteMembreIntD' },
+            { label: 'Ataxie', name1: 'ataxie' },
+            { label: 'Sensibilité', name1: 'sensibilite' },
+            { label: 'Langage', name1: 'langage' },
+            { label: 'Dysarthrie', name1: 'dysarthrie' },
+            { label: 'Extinction Négligence', name1: 'extinctionNegligence' },
+          ].map((group, index) => (
+            <React.Fragment key={index}>
+              <Grid item xs={12}>
+                <Box
+                  sx={{
+                    backgroundColor: index % 2 === 0 ? '#ffffff' : '#ffffff',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    padding: 2,
+                    margin: '4px 0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      minWidth: '250px',
+                      fontWeight: 500,
+                      color: '#333'
+                    }}
+                  >
+                    {group.label}
+                  </Typography>
                   
-              
-                   <Button
-                     type="submit"
-                     variant="contained"
-                     endIcon={<SendIcon />}
-                     className="button"
-                    
-                   >
-                     Enregistrer
-                   </Button>{" "}
-                   
-           
+                  <FormControl component="fieldset">
+                    <RadioGroup
+                      row
+                      name={group.name1}
+                      value={PreData[group.name1]}
+                      onChange={handleRadioChange}
+                      sx={{
+                        gap: 3,
+                        '& .MuiFormControlLabel-root': {
+                          margin: 0,
+                          padding: '8px 12px',
+                          border: '1px solid #ddd',
+                          borderRadius: '6px',
+                          backgroundColor: '#fff',
+                          transition: 'all 0.2s ease',
+                          '&:hover': {
+                            backgroundColor: '#f0f0f0',
+                            borderColor: '#0E8388'
+                          }
+                        },
+                        '& .Mui-checked + .MuiFormControlLabel-label': {
+                          fontWeight: 'bold'
+                        },
+                        '& .MuiFormControlLabel-root.Mui-checked': {
+                          backgroundColor: '#f0f0f0'  ,
+                          borderColor: '#0E8388',
+                          color: '#0E8388'
+                        }
+                      }}
+                    >
+                      {[0, 1, 2, 3, 4].map((value) => (
+                        <FormControlLabel
+                          key={value}
+                          value={value}
+                          control={<Radio size="small" />}
+                          label={value.toString()}
+                        />
+                      ))}
+                    </RadioGroup>
+                  </FormControl>
+                </Box>
+              </Grid>
+            </React.Fragment>
+          ))}
 
-                 {/* </div> */}
-               </Stack>
-           </form>
+          {/* Total */}
+          <Grid item xs={4}>
+            <Typography variant="h4">Total</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              label="Total"
+              type="number"
+              name="totalAuto"
+              value={PreData.totalAuto}
+              disabled={true}
+              margin="normal"
+            />
+          </Grid>
+
+        </Grid>
+      </Box>
+
+      <Box height={30} />
+      <Stack direction="row" spacing={2}>
+        <Button
+          type="submit"
+          variant="contained"
+          endIcon={<SendIcon />}
+          className="button"
+        >
+          Enregistrer
+        </Button>
+      </Stack>
+    </form>
   );
 };
+
 export default AddNihssForm;

@@ -43,7 +43,7 @@ const ScannerSection = ({ id, handleChange2, mode = "Edit" }) => {
     DateScanner: "",
    
     AngioscanTSA_Willis:"",
-    Occlusin:"",
+    Occlusion:"",
     Stenose:"",
     stenoseRatio: '',
 
@@ -70,7 +70,7 @@ const ScannerSection = ({ id, handleChange2, mode = "Edit" }) => {
     DateScanner: new Date(),
    
     AngioscanTSA_Willis:"",
-    Occlusin:"",
+    Occlusion:"",
     Stenose:"",
     StenosePercent: "",
     Description:"",
@@ -116,7 +116,7 @@ fetchData();
       updatedScannerData = scannerDataInit;
       setScannerData(scannerDataInit); 
     }else if (scannerData.AngioscanTSA_Willis === "Normal") {
-      updatedScannerData.Occlusin_sténose = "";
+      updatedScannerData.Occlusion_sténose = "";
         updatedScannerData.ACGauche = "";
         updatedScannerData.ACDroite = "";
         updatedScannerData.troncbasilaire = "non"; // Assuming this is fixed as "non"
@@ -323,8 +323,8 @@ fetchData();
         
             <RadioGroup
                 row
-                name="Occlusin"
-                value={scannerData.Occlusin}
+                name="Occlusion"
+                value={scannerData.Occlusion}
                 onChange={(event) => handleChange2(event, setScannerData)}
                 sx={{
                  
@@ -437,7 +437,7 @@ fetchData();
      <Stack direction="row" spacing={4} alignItems="center" justifyContent="center" >
        <RadioGroup
 
-           name="AngioWillisGacuhe"
+           name="AngioWillisGauche"
            value={scannerData.AngioWillisGauche}
            onChange={(event) => handleChange2(event, setScannerData)}
        >

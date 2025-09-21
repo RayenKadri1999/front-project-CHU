@@ -16,7 +16,6 @@ import { Alert, Typography } from "@mui/material";
 import {PlusIcon } from "lucide-react";
 import { DataGrid } from "@mui/x-data-grid";
 import authHeader from "../../../services/auth-header";
-import AddNihss from "./AddNihss";
 import DetailsNihss from "./DetailsNihss";
 import AddNihssForm from "../AddNihssForm";
 import DetailsNihssForm from "../DetailsNihssForm";
@@ -129,7 +128,7 @@ const[successMessage,setSuccessMessage]=useState("")
       <ModalDialog open={openAdd}
        handleClose={() => handleClose(setOpenAdd)} 
 
-      FormComponent={AddNihss} 
+      FormComponent={AddNihssForm} 
 
   formProps={{                  // Pass the props that the form needs
     setNewNihss:setNewNihss, 

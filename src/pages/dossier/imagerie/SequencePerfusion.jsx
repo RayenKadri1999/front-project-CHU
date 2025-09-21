@@ -52,7 +52,6 @@ HyperperfusionD :false,
      
     });
 
-
     const [isEditable, setIsEditable] = useState(false);
 
 
@@ -79,7 +78,7 @@ HyperperfusionD :false,
         ATAG:data.Details.includes("ATA Gauche"),
         ATAD:data.Details.includes("ATA Droite"),
         FHSG:data.Details.includes("FHS Gauche"),
-        FHSD:data.Details.includes("FHS  Droite"),
+        FHSD:data.Details.includes("FHS Droite"),
         HyperperfusionG:data.Details.includes("Hyperperfusion Gauche"),
         HyperperfusionD:data.Details.includes("Hyperperfusion Droite"),
        

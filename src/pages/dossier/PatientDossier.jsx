@@ -96,6 +96,7 @@ let tabsConfig = [
     {
         key: "Hospitaliere",
         label: "Hospitaliere",
+        entity: "Hospitaliere",
         icon: <HealingIcon />,
         component: Hospitaliere,
     },
@@ -322,11 +323,17 @@ const PatientDossier = ({ mode }) => {
                 >
                     {/* <Box component="main" sx={{ flexGrow: 1, p: 3 }}> */}
 
-                    {React.createElement(
-                        tabsConfig.find((e) => e.key == activeComponent)
-                            .component,
-                        {  mode }
-                    )}
+                    {(() => {
+                        const activeTab = tabsConfigList.find(
+                            (tab) => tab.key == activeComponent
+                        );
+                        return React.createElement(activeTab.component, {
+                            mode,
+                            ...(activeTab.entity && {
+                                tabName: activeTab.entity,
+                            }),
+                        });
+                    })()}
 
                     {/* Content of Prehospitaliere */}
                     {/* <Folder commonState={commonState} /> */}

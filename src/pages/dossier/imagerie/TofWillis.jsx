@@ -222,8 +222,8 @@ const TOFWillisSection = ({ id, handleChange2, handleChangecheck, mode = "Edit" 
                             <Typography variant="h6">Occlusion</Typography>
                             <RadioGroup
                                 row
-                                name="Occlusin"
-                                value={tof_WillisData.Occlusin}
+                                name="Occlusion"
+                                value={tof_WillisData.Occlusion}
                                 onChange={(event) => handleChange2(event, setTof_WillisData)}
                             >
                                 <FormControlLabel
