@@ -38,7 +38,7 @@ const HospitalisationDetails = ({mode = "Edit"}) => {
   const [isDataAvailable, setIsDataAvailable] = useState(false);
   const [HospitalisationData, setHospitalisationData] = useState({
     entreeFaitPar: "",
-    sortieFaitPar: "",
+    sortieFaitPar: null,
     _id: "",
     dateEntree: null,
     dateSortie: null,
@@ -52,9 +52,18 @@ const HospitalisationDetails = ({mode = "Edit"}) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Define required fields that should never be null
+    const requiredFields = ['entreeFaitPar', '_id', 'TypeAVC', 'status', 'dossier'];
+    
+    // For optional fields, set to null if empty, otherwise use the value
+    const processedValue = requiredFields.includes(name) 
+      ? value 
+      : (value === '' ? null : value);
+    
     setHospitalisationData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: processedValue,
     }));
   };
 
@@ -67,9 +76,17 @@ const HospitalisationDetails = ({mode = "Edit"}) => {
   };
 
   const handleSubmit = (e) => {
+    // Filter out null, undefined, and empty string values
+    const filteredHospitalisationData = {};
+    Object.keys(HospitalisationData).forEach(key => {
+      if (HospitalisationData[key] !== null && HospitalisationData[key] !== undefined && HospitalisationData[key] !== '') {
+        filteredHospitalisationData[key] = HospitalisationData[key];
+      }
+    });
+
     apiServices.handleSubmit(
         e,
-        HospitalisationData,
+        filteredHospitalisationData,
         "hospitalisation",
         setSuccessMessage,
         isDataAvailable,
@@ -207,7 +224,7 @@ const HospitalisationDetails = ({mode = "Edit"}) => {
                             required
                             label="Sortie Fait Par"
                             name="sortieFaitPar"
-                            value={HospitalisationData.sortieFaitPar}
+                            value={HospitalisationData.sortieFaitPar || ''}
                             onChange={handleChange}
                             disabled={!isEditable}
                             fullWidth

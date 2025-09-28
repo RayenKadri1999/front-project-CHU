@@ -15,8 +15,6 @@ import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import ModalDialog from "./ModalDialog";
-import AddNihssForm from './AddNihssForm';
-import DetailsNihssForm from "./DetailsNihssForm";
 import PdfButton from "../../components/shared/PdfButton";
 
 
@@ -224,7 +222,7 @@ export default function ExamenClinique_Hematome({mode = "Edit"}) {
                 <ModalDialog open={openAdd}
                              handleClose={() => handleClose(setOpenAdd)}
 
-                             FormComponent={AddNihssForm}
+                             FormComponent={null}
 
                              formProps={{                  // Pass the props that the form needs
                                  setData:setExamenCliniqueData,
@@ -233,7 +231,7 @@ export default function ExamenClinique_Hematome({mode = "Edit"}) {
                                  setSuccessMessage:setSuccessMessage,
                              }}
                 />
-                <ModalDialog open={openDetails} handleClose={() => handleClose(setOpenDetails)}  FormComponent={DetailsNihssForm}
+                <ModalDialog open={openDetails} handleClose={() => handleClose(setOpenDetails)}  FormComponent={null}
                              formProps={{                  // Pass the props that the form needs
                                  idNihss: idNihss,
                                  setData: setExamenCliniqueData,

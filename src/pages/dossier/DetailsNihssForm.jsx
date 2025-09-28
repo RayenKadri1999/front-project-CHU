@@ -1,194 +1,94 @@
-
-import React from "react";
-
-
-import Box from "@mui/material/Box";
-
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
-import  { useState,useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Grid,
+  Typography,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  TextField,
+  Button,
+  Alert,
+  Stack
+} from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
-
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { TextareaAutosize } from '@mui/base';
-
 import dayjs from "dayjs";
+import apiServices from "../../services/api-services";
 
-
-import { FormControlLabel, Radio, RadioGroup, Typography,Grid, MenuItem, Select } from "@mui/material";
-import { SendIcon,PlusIcon } from "lucide-react";
-
-
-import authHeader from "../../services/auth-header";
-import PdfButton from "../../components/shared/PdfButton";
-function DetailsNihssForm({handleClose,idNihss,setData,setNihssData,setSuccessMessage}) {
-
-
+function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSuccessMessage }) {
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#0E8388",
-      },
-    },
+  const [NihssData, setNihssDataLocal] = useState({
+    categorie: '',
+    date: new Date(),
+    totalAuto: '',
+    vigilance: '',
+    orientation: '',
+    commandes: '',
+    oculomotricite: '',
+    champVisuel: '',
+    paralysieFaciale: '',
+    motriciteMembreSupG: '',
+    motriciteMembreSupD: '',
+    motriciteMembreIntG: '',
+    motriciteMembreIntD: '',
+    ataxie: '',
+    sensibilite: '',
+    langage: '',
+    dysarthrie: '',
+    extinctionNegligence: '',
   });
 
-
-
- 
-
-
-
-//   const [NihssData, setNihssData] = useState({
-    
-//     categorie: '',
-
-//   // Date and Heure
-//   date: new Date(),
-
-
-//   // Total auto.
-//   totalAuto: '',
-
-//   // Subcategories
-//   vigilance: '',//0..4
-//   orientation: '',//0..4
-//   commandes: '',//0..4
-//   oculomotricite: '',//0..4
-//   champVisuel: '',//0..4
-//   paralysieFaciale: '',//0..4
-// //tous les champs //0..4
-
-
-//   // Sa Motricité membre sup.G
-//   motriciteMembreSupG: '',
-
-//   // Motricité membre sup. (D)
-//   motriciteMembreSupD: '',
-
-//   // Motricité membre int. (G)
-//   motriciteMembreIntG: '',
-
-//   // Motricité membre int. (D)
-//   motriciteMembreIntD: '',
-
-//   ataxie: '',
-//   sensibilite: '',
-//   langage: '',
-//   dysarthrie: '',
-//   extinctionNegligence: '',
-//   patient: '',
-   
-//   });
-
-
-const [PreData, setPreData] = useState({
-    
-  categorie: '',
-
-// Date and Heure
-date: new Date(),
-
-
-// Total auto.
-totalAuto: '',
-
-// Subcategories
-vigilance: '',//0..4
-orientation: '',//0..4
-commandes: '',//0..4
-oculomotricite: '',//0..4
-champVisuel: '',//0..4
-paralysieFaciale: '',//0..4
-//tous les champs //0..4
-
-
-// Sa Motricité membre sup.G
-motriciteMembreSupG: '',
-
-// Motricité membre sup. (D)
-motriciteMembreSupD: '',
-
-// Motricité membre int. (G)
-motriciteMembreIntG: '',
-
-// Motricité membre int. (D)
-motriciteMembreIntD: '',
-
-ataxie: '',
-sensibilite: '',
-langage: '',
-dysarthrie: '',
-extinctionNegligence: '',
-
- 
-}); 
-const [error, setError] = useState(null);
-  const loadNihssDetails = async () => {
-console.log(idNihss)
-    try {
-      const result = await axios.get(`http://localhost:3000/api/nihss/getDetails/${idNihss}`,{ headers: authHeader() });
- 
-
-      
-      if (result.data) {
-        setPreData(result.data);
-      
-      }
-
-    } catch (error) {
-      alert(error);
-    }
+  const valueRange = {
+    vigilance: 3,
+    orientation: 2,
+    commandes: 2,
+    oculomotricite: 2,
+    champVisuel: 3,
+    paralysieFaciale: 3,
+    motriciteMembreSupG: 4,
+    motriciteMembreSupD: 4,
+    motriciteMembreIntG: 4,
+    motriciteMembreIntD: 4,
+    ataxie: 2,
+    sensibilite: 2,
+    langage: 3,
+    dysarthrie: 2,
+    extinctionNegligence: 2,
   };
 
+  // Load existing NIHSS data
   useEffect(() => {
-    loadNihssDetails();
-    
-  }, []);
-  
+    const loadNihssData = async () => {
+      if (idNihss) {
+        try {
+          setIsLoading(true);
+          const data = await apiServices.loadDossierDetails(
+            setNihssDataLocal,
+            "nihss",
+            () => {},
+            setError,
+            idNihss
+          );
+          if (data) {
+            setNihssDataLocal(data);
+          }
+        } catch (error) {
+          setError("Erreur lors du chargement des données NIHSS");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
 
- 
+    loadNihssData();
+  }, [idNihss]);
 
-  const handleChangeDate =(name) => (value) =>  {
-    
-    console.log(PreData[name]);
-    const updatedDateTime = dayjs(PreData[name]).set('year', value.year())
-    .set('month', value.month())
-    .set('date', value.date());
-    console.log((updatedDateTime));
-
-
-   
-    setPreData((prevData) => ({
-      
-      ...prevData,
-      [name]: updatedDateTime,
-    })
-    );
-  
-  };
-  const handleChangeTime =(name) => (value)  => {
-   
-    const updatedDateTime = dayjs(PreData[name]).set('hour', value.hour())
-    .set('minute', value.minute());
-  
-    
-    
-    setPreData((prevData) => ({
-      ...prevData,
-      [name]:updatedDateTime ,
-    })
-    );
-  };
   const totalCalc = () => {
     const total = [
       'vigilance',
@@ -207,305 +107,220 @@ console.log(idNihss)
       'dysarthrie',
       'extinctionNegligence',
     ].reduce((acc, key) => {
-      const value = parseInt(PreData[key], 10);
+      const value = parseInt(NihssData[key], 10);
       return acc + (isNaN(value) ? 0 : value);
     }, 0);
 
-    setPreData((prevState) => ({
+    setNihssDataLocal((prevState) => ({
       ...prevState,
       totalAuto: total,
     }));
   };
 
   useEffect(() => {
-    totalCalc();
-  }, [PreData]);
+    if (!isLoading) {
+      totalCalc();
+    }
+  }, [NihssData, isLoading]);
 
-
-  const [createSuccess, setCreateSuccess] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPreData((prevData) => ({
+    setNihssDataLocal((prevData) => ({
       ...prevData,
       [name]: value,
-    })
-    );
+    }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const response = await fetch(`http://localhost:3000/api/nihss/update/${idNihss}`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         'x-access-token': authHeader()['x-access-token']
-  //       },
-  //       body: JSON.stringify(PreData)
-  //     });
-
-
-  //     if (response.status === 201) {
-  
-  //       setCreateSuccess(true);
-  //       console.log("Nihss  updated successfully!");
-  //       setExamenCliniqueData(prevData => ({
-  //         ...prevData,
-  //         NIHSSInitial: PreData.totalAuto,
-  //       }));
-  //       handleClose();
-
-  //     } else {
-  //       console.error("Nihss update failed:", response);
-  //       handleClose();
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in handleSubmit:", error);
-  //     handleClose();
-  //   }
-  // };
-  
+  const handleRadioChange = (fieldName, value) => {
+    setNihssDataLocal((prevData) => ({
+      ...prevData,
+      [fieldName]: value.toString(),
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Update the parent components with the new data
+    if (setNihssData) {
+      setNihssData(NihssData);
+    }
     
-        // Patient updated successfully
-        setCreateSuccess(true);
-     
-        setNihssData((prevState) => ({
-          ...prevState,  // Keep the existing values
-          ...PreData     // Overwrite with values from PreData (only if they exist in PreData)
-        }));
-      
-        setData(prevData => ({
-          ...prevData,
-          NIHSSInitial: PreData.totalAuto,
-         
-        }));
-
-      
-        handleClose();
-      
-     
+    apiServices.handleSubmitModal(
+      e,
+      NihssData,
+      "nihss",
+      setSuccessMessage,
+      true,
+      handleClose,
+      setError,
+      idNihss
+    );
   };
 
-  return (
-    <>
-     
-    
-        
-         <form onSubmit={handleSubmit}>
-         <Stack direction="row" alignItems="center" spacing={4}   >
-            <Typography variant="h4" > Details NIHSS </Typography>
-            <PdfButton pdfUrl="../../../public/pdf/ScoreNIHSS.pdf"  />
-  
-   </Stack>
-   
-    <Box
-      sx={{ display: "flex", flexDirection: "row", alignItems: "center" ,p: 2 }}>
-
-
- <Grid container spacing={2} alignItems="center">
-
-  
-   <Grid item xs={4}>
-   
-     <Typography variant="h6" >  Categorie  </Typography>
-     
-   </Grid>
-     <Grid item xs={8}>
-       <TextField
-         fullWidth
-         label="Categorie"
-         type="text"
-         name="categorie"
-         value={PreData.categorie}
-         onChange={handleChange}
-
-         margin="normal"
-       />
-     </Grid>
-     
-   
-
-
-  
-   
-
-   {/* Example 2: Label with Two Related Fields */}
-   <Grid item xs={4} >
-   <Typography variant="h6" >  Date  </Typography>
-   </Grid>
-
- 
-     <Grid item xs={8}>
-     <LocalizationProvider dateAdapter={AdapterDayjs}>
-     <DatePicker
-                        label="Date.."
-                        name="date"
-                        onChange={handleChangeDate('date')}
- format="DD/MM/YYYY"
-                        // slotProps={{
-                        //   textField: {
-                        //     helperText: "",
-                            
-                        //   },
-                        // }}
-
-                         value={dayjs(PreData.date)}
+  const renderRadioGroup = (label, fieldName, maxValue) => (
+    <Box sx={{ 
+      mb: 3, 
+      p: 2, 
+      border: '1px solid #e0e0e0', 
+      borderRadius: 1,
+      backgroundColor: 'transparent'
+    }}>
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} md={4}>
+          <Typography variant="h6" sx={{ fontWeight: 'medium', color: '#333' }}>
+            {label}
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <FormControl component="fieldset" sx={{ width: '100%' }}>
+            <RadioGroup 
+              row 
+              value={NihssData[fieldName]} 
+              onChange={(e) => handleRadioChange(fieldName, e.target.value)}
+              sx={{ gap: 1 }}
+            >
+              {[...Array(maxValue + 1).keys()].map((value) => (
+                <Box
+                  key={value}
+                  sx={{
+                    border: NihssData[fieldName] === value.toString() 
+                      ? '2px solid #0E8388' 
+                      : '1px solid #ccc',
+                    borderRadius: 1,
+                    backgroundColor: NihssData[fieldName] === value.toString() 
+                      ? '#e8f5f4' 
+                      : 'white',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      backgroundColor: NihssData[fieldName] === value.toString() 
+                        ? '#d1f2f0' 
+                        : '#f5f5f5',
+                      borderColor: '#0E8388'
+                    }
+                  }}
+                >
+                  <FormControlLabel
+                    value={value.toString()}
+                    control={
+                      <Radio
+                        sx={{ 
+                          color: '#0E8388',
+                          '&.Mui-checked': {
+                            color: '#0E8388',
+                          }
+                        }}
                       />
-                      </LocalizationProvider>
-       
-     </Grid>
+                    }
+                    label={
+                      <Typography 
+                        variant="body1" 
+                        sx={{ 
+                          fontWeight: NihssData[fieldName] === value.toString() ? 'bold' : 'normal',
+                          minWidth: '20px',
+                          textAlign: 'center'
+                        }}
+                      >
+                        {value.toString()}
+                      </Typography>
+                    }
+                    sx={{ 
+                      m: 0,
+                      p: 1,
+                      minWidth: '60px',
+                      justifyContent: 'center'
+                    }}
+                  />
+                </Box>
+              ))}
+            </RadioGroup>
+          </FormControl>
+        </Grid>
+      </Grid>
+    </Box>
+  );
 
+  if (isLoading) {
+    return (
+      <Box sx={{ p: 3, width: '100%', maxWidth: '90vw', minWidth: 600, textAlign: 'center' }}>
+        <Typography>Chargement des données NIHSS...</Typography>
+      </Box>
+    );
+  }
 
-
-   <Grid item xs={4} >
-
-           <Typography variant="h6" >  Heure  </Typography>
-
-   </Grid>
-   
-   
-     <Grid item xs={8}>
-       
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DemoContainer components={["TimePicker"]}>
-                        <TimePicker
-                      label="Heure"
-                         
-                        
-                          value={dayjs(PreData.date)}
-                          
-                          onChange={handleChangeTime('date')}
-                  
-                        
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-     </Grid>
-   
-
-
-   {/* Repeat similar structure for other labels and fields */}
-   {[
-   { label: 'Vigilance', name1: 'vigilance'},
-   { label: 'Orientation', name1: 'orientation'},
-   { label: 'Commandes', name1: 'commandes' },
-   { label: 'Oculomotricite', name1: 'oculomotricite' },
-   { label: 'Champ Visuel', name1: 'champVisuel'},
-   { label: 'Paralysie Faciale', name1: 'paralysieFaciale' },
-
-   { label: 'Motricite Membre Sup (G)', name1: 'motriciteMembreSupG'},
-   { label: 'Motricite Membre Sup (D)', name1: 'motriciteMembreSupD' },
-
-   { label: 'Motricite Membre Int (G)', name1: 'motriciteMembreIntG' },
-   { label: 'Motricite Membre Int (D)', name1: 'motriciteMembreIntD' },
-   
-   { label: 'Ataxie', name1: 'ataxie' },
-   { label: 'Sensibilite', name1: 'sensibilite' },
-   { label: 'Langage', name1: 'langage' },
-   { label: 'Dysarthrie', name1: 'dysarthrie'},
-   
-   { label: 'Extinction Negligence', name1: 'extinctionNegligence' },
-
-     // Add other fields similarly
-   ].map((group, index) => (
-     <React.Fragment key={index}>
-        <Grid item xs={4} >
-        
-        
-        <Typography variant="h6" >  {group.label}  </Typography>
-    
-    </Grid>
+  return (
+    <Box sx={{ p: 3, width: '100%', maxWidth: '90vw', minWidth: 600 }}>
+      {error && <Alert severity="error">{error}</Alert>}
       
-         <Grid item xs={8} >
-          
-            <Select
-                 labelId="demosimpleselectlabel"
-                 id="demosimpleselect"
-                 value={PreData[group.name1]}
-                 onChange={handleChange}
-                 name={group.name1}
-                 label={`${group.label} 1`}
-          
-                 fullWidth
-                 
-               >
-                  <MenuItem value={0}>0 </MenuItem>
-                 <MenuItem value={1}>1 </MenuItem>
-                 <MenuItem value={2}>2  </MenuItem>
-                 <MenuItem value={3}>3 </MenuItem>
-                 <MenuItem value={4}>4  </MenuItem>
-               </Select>
-         </Grid>
-        
+      <Typography variant="h4" gutterBottom>
+        Détails NIHSS
+      </Typography>
 
-     </React.Fragment>
-   ))}
+      <form onSubmit={handleSubmit}>
+        <Stack spacing={3}>
+          {/* Date */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Date"
+              value={dayjs(NihssData.date)}
+              onChange={(newValue) => {
+                setNihssDataLocal((prevData) => ({
+                  ...prevData,
+                  date: newValue ? newValue.toDate() : new Date(),
+                }));
+              }}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+            />
+          </LocalizationProvider>
 
-<Grid item xs={4} >
-  
-  <Typography variant="h4" >  Total  </Typography>
+          {/* Categorie */}
+          <TextField
+            label="Catégorie"
+            name="categorie"
+            value={NihssData.categorie || ''}
+            onChange={handleChange}
+            fullWidth
+          />
 
-</Grid>
-<Grid item xs={8}>
-  <TextField
-    fullWidth
-    label="Total"
-    type="number"
-    name="totalAuto"
-    value={PreData.totalAuto}
-  
-   disabled={true}
-    margin="normal"
-  />
-</Grid>
- </Grid>
+          {/* NIHSS Fields with Radio Buttons */}
+          {renderRadioGroup("Vigilance", "vigilance", valueRange.vigilance)}
+          {renderRadioGroup("Orientation", "orientation", valueRange.orientation)}
+          {renderRadioGroup("Commandes", "commandes", valueRange.commandes)}
+          {renderRadioGroup("Oculomotricité", "oculomotricite", valueRange.oculomotricite)}
+          {renderRadioGroup("Champ Visuel", "champVisuel", valueRange.champVisuel)}
+          {renderRadioGroup("Paralysie Faciale", "paralysieFaciale", valueRange.paralysieFaciale)}
+          {renderRadioGroup("Motricité Membre Sup. (G)", "motriciteMembreSupG", valueRange.motriciteMembreSupG)}
+          {renderRadioGroup("Motricité Membre Sup. (D)", "motriciteMembreSupD", valueRange.motriciteMembreSupD)}
+          {renderRadioGroup("Motricité Membre Inf. (G)", "motriciteMembreIntG", valueRange.motriciteMembreIntG)}
+          {renderRadioGroup("Motricité Membre Inf. (D)", "motriciteMembreIntD", valueRange.motriciteMembreIntD)}
+          {renderRadioGroup("Ataxie", "ataxie", valueRange.ataxie)}
+          {renderRadioGroup("Sensibilité", "sensibilite", valueRange.sensibilite)}
+          {renderRadioGroup("Langage", "langage", valueRange.langage)}
+          {renderRadioGroup("Dysarthrie", "dysarthrie", valueRange.dysarthrie)}
+          {renderRadioGroup("Extinction / Négligence", "extinctionNegligence", valueRange.extinctionNegligence)}
 
+          {/* Total */}
+          <TextField
+            label="Total Auto"
+            name="totalAuto"
+            value={NihssData.totalAuto || ''}
+            disabled
+            fullWidth
+          />
 
- 
-
-
-               
-</Box>
-<Box height={30} />
-               <Stack direction="row" spacing={2}>
-                  
-              
-                   <Button
-                     type="submit"
-                     variant="contained"
-                     endIcon={<SendIcon />}
-                     className="button"
-                    
-                   >
-                     Enregistrer
-                   </Button>{" "}
-                   
-           
-
-                 {/* </div> */}
-               </Stack>
-
-
-
-
-           </form>
-           
-  
-   
-    
-
-   
-    </>
-  )
+          {/* Submit Button */}
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+            <Button onClick={handleClose} variant="outlined">
+              Annuler
+            </Button>
+            <Button type="submit" variant="contained" color="primary">
+              Mettre à jour
+            </Button>
+          </Box>
+        </Stack>
+      </form>
+    </Box>
+  );
 }
 
-export default DetailsNihssForm
-
-
-
-
+export default DetailsNihssForm;

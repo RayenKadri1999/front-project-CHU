@@ -257,6 +257,7 @@ export default function ConclusionSortieHematome({mode = "Edit"}) {
 
                                  setNihssData:setNihssData,
                                  setSuccessMessage:setSuccessMessage,
+                                 matricule: id,
                              }}
                 />
                 <ModalDialog open={openDetails} handleClose={() => handleClose(setOpenDetails)}  FormComponent={DetailsNihssForm}

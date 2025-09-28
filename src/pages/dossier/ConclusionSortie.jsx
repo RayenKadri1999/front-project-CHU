@@ -25,8 +25,6 @@ import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
 import ModalDialog from "./ModalDialog";
-import AddNihssForm from "./AddNihssForm";
-import DetailsNihssForm from "./DetailsNihssForm";
 
 
 
@@ -236,7 +234,7 @@ export default function ConclusionSortie({ mode = "Edit" }) {
                 <ModalDialog
                     open={openAdd}
                     handleClose={() => handleClose(setOpenAdd)}
-                    FormComponent={AddNihssForm}
+                    FormComponent={null}
                     formProps={{
                         // Pass the props that the form needs
                         setData: setConclusionSortieData,
@@ -248,7 +246,7 @@ export default function ConclusionSortie({ mode = "Edit" }) {
                 <ModalDialog
                     open={openDetails}
                     handleClose={() => handleClose(setOpenDetails)}
-                    FormComponent={DetailsNihssForm}
+                    FormComponent={null}
                     formProps={{
                         // Pass the props that the form needs
                         idNihss,

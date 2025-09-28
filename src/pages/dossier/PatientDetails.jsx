@@ -32,32 +32,49 @@ const PatientDetails = ({mode = "Edit"}) => {
   const [error, setError] = useState(null);
 
   const [patientData, setPatientData] = useState({
-    numero_dossier:"",
+    numeroDossier: "",
     Nom: "",
     Prenom: "",
     sexe: "",
-    Adresse: "",
+    Adresse: null,
     dateNaissance: "",
-    matricule: "",
-    aidantPrincipal: "",
-    numeroAidantPrincipal: "",
-    signatureDocteur: "",
-    email: "",
-    telephone: "",
+    matricule: null,
+    aidantPrincipal: null,
+    numeroAidantPrincipal: null,
+    signatureDocteur: null,
+    email: null,
+    telephone: null,
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Define required fields that should never be null
+    const requiredFields = ['numeroDossier', 'Nom', 'Prenom', 'sexe', 'dateNaissance'];
+    
+    // For optional fields, set to null if empty, otherwise use the value
+    const processedValue = requiredFields.includes(name) 
+      ? value 
+      : (value === '' ? null : value);
+    
     setPatientData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: processedValue,
     }));
   };
 
   const handleSubmit = (e) => {
+    // Filter out null, undefined, and empty string values
+    const filteredPatientData = {};
+    Object.keys(patientData).forEach(key => {
+      if (patientData[key] !== null && patientData[key] !== undefined && patientData[key] !== '') {
+        filteredPatientData[key] = patientData[key];
+      }
+    });
+
     apiServices.handleSubmit(
         e,
-        patientData,
+        filteredPatientData,
         "patient",
         setSuccessMessage,
         isDataAvailable,
@@ -91,8 +108,8 @@ const PatientDetails = ({mode = "Edit"}) => {
                 <TextField
                     label="Numéro Dossier"
                     type="text"
-                    name="numero_dossier"
-                    value={patientData.numero_dossier}
+                    name="numeroDossier"
+                    value={patientData.numeroDossier}
                     onChange={handleChange}
                     disabled={!isEditable}
                     fullWidth
@@ -143,7 +160,7 @@ const PatientDetails = ({mode = "Edit"}) => {
                     label="Adresse"
                     name="Adresse"
                     type="text"
-                    value={patientData.Adresse}
+                    value={patientData.Adresse || ''}
                     onChange={handleChange}
                     disabled={!isEditable}
                     InputLabelProps={{ shrink: true }}
@@ -182,7 +199,7 @@ const PatientDetails = ({mode = "Edit"}) => {
                 <TextField
                     label="Aidant Principal"
                     name="aidantPrincipal"
-                    value={patientData.aidantPrincipal}
+                    value={patientData.aidantPrincipal || ''}
                     onChange={handleChange}
                     disabled={!isEditable}
                     fullWidth
@@ -194,7 +211,7 @@ const PatientDetails = ({mode = "Edit"}) => {
                 <TextField
                     label="Numero Aidant Principal"
                     name="numeroAidantPrincipal"
-                    value={patientData.numeroAidantPrincipal}
+                    value={patientData.numeroAidantPrincipal || ''}
                     onChange={handleChange}
                     disabled={!isEditable}
                     fullWidth
@@ -206,7 +223,7 @@ const PatientDetails = ({mode = "Edit"}) => {
                 <TextField
                     label="Téléphone"
                     name="telephone"
-                    value={patientData.telephone}
+                    value={patientData.telephone || ''}
                     onChange={handleChange}
                     disabled={!isEditable}
                     fullWidth
@@ -218,7 +235,7 @@ const PatientDetails = ({mode = "Edit"}) => {
                 <TextField
                     label="Email"
                     name="email"
-                    value={patientData.email}
+                    value={patientData.email || ''}
                     onChange={handleChange}
                     disabled={!isEditable}
                     fullWidth

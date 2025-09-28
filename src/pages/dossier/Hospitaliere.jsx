@@ -41,57 +41,37 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
     // const tabName = "Hospitaliere";
     const { idDossier, id } = useParams();
     const initialHospitaliereData = {
-        Allergies: "",
-        HTA: "",
-        Hypercholestérolémie: "",
-        Diabète: "",
-        Fibrillation_auriculaire: "",
-        Ancienneté_fibrillation: "",
-        SAS: "",
-        SAS_appareillé: "",
-        AIT: "",
-        AVC: "",
-        Cardiopathie_ischémique: "",
-        Artériopathie: "",
-        Autres_antécédents: "",
-        Vit: "",
-        Latéralité: "",
-        Profession: "",
-        Autonomie: "",
-        Tabagisme: "",
-        Chicha: "",
-        Neffa: "",
-        Consommation_alcool: "",
-        Rankin_préAVC: "",
-        GIR: "",
-        Poids: "",
-        Taille: "",
-        IMC: "",
-
-        HistoireMaladie: "",
-        TraitementEntrée: "",
-
+        Allergies: null,
+        HTA: null,
+        Hypercholestérolémie: null,
+        Diabète: null,
+        Fibrillation_auriculaire: null,
+        Ancienneté_fibrillation: null,
+        SAS: null,
+        SAS_appareillé: null,
+        AIT: null,
+        AVC: null,
+        Cardiopathie_ischémique: null,
+        Artériopathie: null,
+        Autres_antécédents: null,
+        Vit: null,
+        Latéralité: null,
+        Profession: null,
+        Autonomie: null,
+        Tabagisme: null,
+        Chicha: null,
+        Neffa: null,
+        Consommation_alcool: null,
+        Rankin_préAVC: null,
+        GIR: null,
+        Poids: null,
+        Taille: null,
+        IMC: null,
+        HistoireMaladie: null,
+        TraitementEntrée: null,
         matricule: id,
     };
-    const cleanData = (data) => {
-        // Create a new object to avoid mutating the original one
-        let cleanedData = { ...data };
-        delete cleanedData._id;
-        delete cleanedData.__v;
-        // Loop through the keys of the data
-        Object.keys(cleanedData).forEach((key) => {
-            // Remove fields that have an empty string or are unselected (null or undefined)
-            if (
-                cleanedData[key] === "" ||
-                cleanedData[key] === null ||
-                cleanedData[key] === undefined
-            ) {
-                delete cleanedData[key];
-            }
-        });
-        console.log("cleanedData:", cleanedData);
-        return cleanedData;
-    };
+
 
     const [isEditable, setIsEditable] = useState(false);
     const [isDataAvailable, setIsDataAvailable] = useState(true);
@@ -150,9 +130,18 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
+        // Define required fields that should never be null
+        const requiredFields = ['matricule'];
+        
+        // For optional fields, set to null if empty, otherwise use the value
+        const processedValue = requiredFields.includes(name) 
+            ? value 
+            : (value === '' ? null : value);
+        
         setHospitaliereData((prevData) => ({
             ...prevData,
-            [name]: value,
+            [name]: processedValue,
         }));
     };
 
@@ -195,13 +184,18 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
     }, [hospitaliereData]);
 
     const handleSubmit = (e) => {
-        // Clean the data before sending it
-        const cleanedHospitaliereData = cleanData(hospitaliereData);
+        // Filter out null, undefined, and empty string values
+        const filteredHospitaliereData = {};
+        Object.keys(hospitaliereData).forEach(key => {
+            if (hospitaliereData[key] !== null && hospitaliereData[key] !== undefined && hospitaliereData[key] !== '') {
+                filteredHospitaliereData[key] = hospitaliereData[key];
+            }
+        });
 
         // Call the existing function to handle submission, passing the cleaned data
         apiServices.handleSubmit(
             e,
-            cleanedHospitaliereData,
+            filteredHospitaliereData,
             "hospitaliere",
             setSuccessMessage,
             isDataAvailable,
@@ -210,7 +204,6 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
             setError,
             id
         );
-        // console.log(error);
     };
     // console.log("success");
     // console.log(error);
@@ -371,7 +364,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                                         label={field.label}
                                         name={field.name}
                                         onChange={handleChange}
-                                        value={hospitaliereData[field.name]}
+                                        value={hospitaliereData[field.name] || ''}
                                         disabled={!isEditable}
                                         fullWidth
                                         sx={{ m: 1, width: "79ch" }}
@@ -410,7 +403,12 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                                     ],
                                 },
                                 { label: "Profession", name: "Profession" },
-                                { label: "Autonomie", name: "Autonomie" },
+                                {
+                                    label: "Autonomie",
+                                    name: "Autonomie",
+                                    type: "select",
+                                    options: ["Totale", "Partielle"],
+                                },
 
                                 {
                                     label: "Latéralité",
@@ -510,7 +508,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                                         label={field.label}
                                         name={field.name}
                                         onChange={handleChange}
-                                        value={hospitaliereData[field.name]}
+                                        value={hospitaliereData[field.name] || ''}
                                         disabled={!isEditable}
                                         sx={{ m: 1, width: "25ch" }}
                                         type={field.type || "text"}
@@ -532,7 +530,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                                         label={field.label}
                                         name={field.name}
                                         onChange={handleChange}
-                                        value={hospitaliereData[field.name]}
+                                        value={hospitaliereData[field.name] || ''}
                                         disabled={!isEditable}
                                         sx={{ m: 1, width: "25ch" }}
                                         type={field.type || "text"}
@@ -584,7 +582,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                                         label={field.label}
                                         name={field.name}
                                         onChange={handleChange}
-                                        value={hospitaliereData[field.name]}
+                                        value={hospitaliereData[field.name] || ''}
                                         disabled={!isEditable}
                                         sx={{ m: 1, width: "25ch" }}
                                         type={field.type || "text"}
@@ -612,7 +610,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
 
                     <TextareaAutosize
                         minRows={10}
-                        value={hospitaliereData.HistoireMaladie}
+                        value={hospitaliereData.HistoireMaladie || ''}
                         style={{ width: "100%", padding: 8 }}
                         name="HistoireMaladie"
                         onChange={handleChange}
@@ -625,7 +623,7 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
 
                     <TextareaAutosize
                         minRows={10}
-                        value={hospitaliereData.TraitementEntrée}
+                        value={hospitaliereData.TraitementEntrée || ''}
                         style={{ width: "100%", padding: 8 }}
                         name="TraitementEntrée"
                         onChange={handleChange}

@@ -1,5 +1,4 @@
 import { Box, Dialog } from "@mui/material"
-import AddNihssForm from "./AddNihssForm"
 import React from 'react';
 
 const ModalDialog = ({open,handleClose,FormComponent,formProps }) => {

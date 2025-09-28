@@ -47,7 +47,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
     const [error, setError] = useState(null);
     const [examenCliniqueData, setExamenCliniqueData] = useState({
         NIHSSValue: "",
-        idNIHSS: "",
+        idNIHSS: null,
         LASTInitial: "",
         ResultExamenNeuroInitial: "",
         TA: "",
@@ -237,18 +237,40 @@ export default function ExamenClinique({ mode = "Edit" }) {
     };
 
     useEffect(() => {
+        console.log('Loading examen clinique data for id:', id);
         apiServices.loadDossierDetails(
             setExamenCliniqueData,
             "examenclinique",
             setIsDataAvailable,
             setError,
             id
-        );
+        ).then((data) => {
+            console.log('Loaded examen clinique data:', data);
+            console.log('idNIHSS value:', data?.idNIHSS);
+            
+            // If data is loaded but idNIHSS is undefined, explicitly set it to null
+            if (data && data.idNIHSS === undefined) {
+                setExamenCliniqueData(prevData => ({
+                    ...prevData,
+                    idNIHSS: null
+                }));
+            }
+        });
     }, []);
 
     useEffect(() => {
-        setidNihss(examenCliniqueData.idNIHSS);
-    }, [examenCliniqueData.idNIHSS]);
+        console.log('examenCliniqueData.idNIHSS changed:', examenCliniqueData.idNIHSS);
+        console.log('Full examenCliniqueData:', examenCliniqueData);
+        
+        // Check if idNIHSS exists and is not null/undefined/empty string
+        if (examenCliniqueData.idNIHSS && examenCliniqueData.idNIHSS !== null && examenCliniqueData.idNIHSS !== '') {
+            console.log('Setting idNihss to:', examenCliniqueData.idNIHSS);
+            setidNihss(examenCliniqueData.idNIHSS);
+        } else {
+            console.log('idNIHSS is falsy or null:', examenCliniqueData.idNIHSS);
+            setidNihss(null); // Clear the idNihss state
+        }
+    }, [examenCliniqueData]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -261,10 +283,11 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         setData: setExamenCliniqueData,
                         setNihssData: setNihssData,
                         setSuccessMessage: setSuccessMessage,
+                        matricule: id,
                     }}
                 />
                 <ModalDialog
-                    open={openDetails}
+                    open={openDetails && idNihss}
                     handleClose={() => handleClose(setOpenDetails)}
                     FormComponent={DetailsNihssForm}
                     formProps={{
@@ -315,7 +338,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 type="number"
                                 name="NIHSSValue"
                                 onChange={handleChange}
-                                value={examenCliniqueData.NIHSSValue}
+                                value={examenCliniqueData.NIHSSValue || ''}
                                 label="NIHSS Initial"
                                 fullWidth
                                 disabled={true}
@@ -337,7 +360,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                     color="primary"
                                     onClick={() => handleOpen(setOpenDetails)}
                                     sx={{ minWidth: 40, height: 40 }}
-                                    disabled={!isEditable}
+                                    disabled={!isEditable || !examenCliniqueData.idNIHSS}
                                 >
                                     ...
                                 </Button>
@@ -346,7 +369,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 type="number"
                                 name="LASTInitial"
                                 onChange={handleChange}
-                                value={examenCliniqueData.LASTInitial}
+                                value={examenCliniqueData.LASTInitial || ''}
                                 label="Last Initial"
                                 fullWidth
                                 disabled={!isEditable}
@@ -365,7 +388,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 label=""
                                 disabled={!isEditable}
                                 value={
-                                    examenCliniqueData.ResultExamenNeuroInitial
+                                    examenCliniqueData.ResultExamenNeuroInitial || ''
                                 }
                                 onChange={handleChange}
                                 multiline
@@ -397,7 +420,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         >
                             <TextField
                                 name="TA"
-                                value={examenCliniqueData.TA}
+                                value={examenCliniqueData.TA || ''}
                                 label="TA"
                                 onChange={handleChange}
                                 fullWidth
@@ -405,7 +428,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             />
                             <TextField
                                 name="Dextro"
-                                value={examenCliniqueData.Dextro}
+                                value={examenCliniqueData.Dextro || ''}
                                 label="Dextro"
                                 onChange={handleChange}
                                 fullWidth
@@ -413,7 +436,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             />
                             <TextField
                                 name="AuscultationCardiaque"
-                                value={examenCliniqueData.AuscultationCardiaque}
+                                value={examenCliniqueData.AuscultationCardiaque || ''}
                                 label="Auscultation Cardiaque"
                                 onChange={handleChange}
                                 fullWidth
@@ -422,7 +445,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             <TextField
                                 name="AuscultationPulmonaire"
                                 value={
-                                    examenCliniqueData.AuscultationPulmonaire
+                                    examenCliniqueData.AuscultationPulmonaire || ''
                                 }
                                 label="Auscultation Pulmonaire"
                                 onChange={handleChange}
@@ -435,7 +458,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 <RadioGroup
                                     row
                                     name="SouffleCarotidien"
-                                    value={examenCliniqueData.SouffleCarotidien}
+                                    value={examenCliniqueData.SouffleCarotidien || ''}
                                     onChange={handleChange}
                                     sx={{ mb: 2 }}
                                 >
@@ -551,7 +574,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 name="ResultsExamenGeneral"
                                 label=""
                                 disabled={!isEditable}
-                                value={examenCliniqueData.ResultsExamenGeneral}
+                                value={examenCliniqueData.ResultsExamenGeneral || ''}
                                 onChange={handleChange}
                                 multiline
                                 rows={4}
