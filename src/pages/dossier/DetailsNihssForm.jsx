@@ -18,6 +18,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import apiServices from "../../services/api-services";
+import { Send } from "lucide-react";
 
 function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSuccessMessage }) {
   const [error, setError] = useState(null);
@@ -159,85 +160,77 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
   };
 
   const renderRadioGroup = (label, fieldName, maxValue) => (
-    <Box sx={{ 
-      mb: 3, 
-      p: 2, 
-      border: '1px solid #e0e0e0', 
-      borderRadius: 1,
-      backgroundColor: 'transparent'
-    }}>
-      <Grid container spacing={2} alignItems="center">
-        <Grid item xs={12} md={4}>
-          <Typography variant="h6" sx={{ fontWeight: 'medium', color: '#333' }}>
-            {label}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <FormControl component="fieldset" sx={{ width: '100%' }}>
-            <RadioGroup 
-              row 
-              value={NihssData[fieldName]} 
-              onChange={(e) => handleRadioChange(fieldName, e.target.value)}
-              sx={{ gap: 1 }}
-            >
-              {[...Array(maxValue + 1).keys()].map((value) => (
-                <Box
-                  key={value}
-                  sx={{
-                    border: NihssData[fieldName] === value.toString() 
-                      ? '2px solid #0E8388' 
-                      : '1px solid #ccc',
-                    borderRadius: 1,
-                    backgroundColor: NihssData[fieldName] === value.toString() 
-                      ? '#e8f5f4' 
-                      : 'white',
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      backgroundColor: NihssData[fieldName] === value.toString() 
-                        ? '#d1f2f0' 
-                        : '#f5f5f5',
-                      borderColor: '#0E8388'
-                    }
-                  }}
-                >
-                  <FormControlLabel
-                    value={value.toString()}
-                    control={
-                      <Radio
-                        sx={{ 
-                          color: '#0E8388',
-                          '&.Mui-checked': {
-                            color: '#0E8388',
-                          }
-                        }}
-                      />
-                    }
-                    label={
-                      <Typography 
-                        variant="body1" 
-                        sx={{ 
-                          fontWeight: NihssData[fieldName] === value.toString() ? 'bold' : 'normal',
-                          minWidth: '20px',
-                          textAlign: 'center'
-                        }}
-                      >
-                        {value.toString()}
-                      </Typography>
-                    }
-                    sx={{ 
-                      m: 0,
-                      p: 1,
-                      minWidth: '60px',
-                      justifyContent: 'center'
-                    }}
-                  />
-                </Box>
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </Grid>
+    <React.Fragment>
+      <Grid item xs={4}>
+        <Typography variant="h6" sx={{ fontWeight: 'medium', color: '#333' }}>
+          {label}
+        </Typography>
       </Grid>
-    </Box>
+      <Grid item xs={8}>
+        <FormControl component="fieldset" sx={{ width: '100%' }}>
+          <RadioGroup 
+            row 
+            value={NihssData[fieldName]} 
+            onChange={(e) => handleRadioChange(fieldName, e.target.value)}
+            sx={{ gap: 1 }}
+          >
+            {[...Array(maxValue + 1).keys()].map((value) => (
+              <Box
+                key={value}
+                sx={{
+                  border: NihssData[fieldName] === value.toString() 
+                    ? '2px solid #0E8388' 
+                    : '1px solid #ccc',
+                  borderRadius: 1,
+                  backgroundColor: NihssData[fieldName] === value.toString() 
+                    ? '#e8f5f4' 
+                    : 'white',
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: NihssData[fieldName] === value.toString() 
+                      ? '#d1f2f0' 
+                      : '#f5f5f5',
+                    borderColor: '#0E8388'
+                  }
+                }}
+              >
+                <FormControlLabel
+                  value={value.toString()}
+                  control={
+                    <Radio
+                      sx={{ 
+                        color: '#0E8388',
+                        '&.Mui-checked': {
+                          color: '#0E8388',
+                        }
+                      }}
+                    />
+                  }
+                  label={
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: NihssData[fieldName] === value.toString() ? 'bold' : 'normal',
+                        minWidth: '20px',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {value.toString()}
+                    </Typography>
+                  }
+                  sx={{ 
+                    m: 0,
+                    p: 1,
+                    minWidth: '60px',
+                    justifyContent: 'center'
+                  }}
+                />
+              </Box>
+            ))}
+          </RadioGroup>
+        </FormControl>
+      </Grid>
+    </React.Fragment>
   );
 
   if (isLoading) {
@@ -249,38 +242,52 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
   }
 
   return (
-    <Box sx={{ p: 3, width: '100%', maxWidth: '90vw', minWidth: 600 }}>
+    <form onSubmit={handleSubmit}>
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+        <Typography variant="h4">Détails NIHSS</Typography>
+      </Box>
+      
       {error && <Alert severity="error">{error}</Alert>}
       
-      <Typography variant="h4" gutterBottom>
-        Détails NIHSS
-      </Typography>
-
-      <form onSubmit={handleSubmit}>
-        <Stack spacing={3}>
-          {/* Date */}
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Date"
-              value={dayjs(NihssData.date)}
-              onChange={(newValue) => {
-                setNihssDataLocal((prevData) => ({
-                  ...prevData,
-                  date: newValue ? newValue.toDate() : new Date(),
-                }));
-              }}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </LocalizationProvider>
-
+      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", p: 2 }}>
+        <Grid container spacing={2} alignItems="center">
+          
           {/* Categorie */}
-          <TextField
-            label="Catégorie"
-            name="categorie"
-            value={NihssData.categorie || ''}
-            onChange={handleChange}
-            fullWidth
-          />
+          <Grid item xs={4}>
+            <Typography variant="h6">Catégorie</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              label="Catégorie"
+              type="text"
+              name="categorie"
+              value={NihssData.categorie || ''}
+              onChange={handleChange}
+              margin="normal"
+            />
+          </Grid>
+
+          {/* Date */}
+          <Grid item xs={4}>
+            <Typography variant="h6">Date</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date"
+                name="date"
+                onChange={(newValue) => {
+                  setNihssDataLocal((prevData) => ({
+                    ...prevData,
+                    date: newValue ? newValue.toDate() : new Date(),
+                  }));
+                }}
+                value={dayjs(NihssData.date)}
+                format="DD/MM/YYYY"
+              />
+            </LocalizationProvider>
+          </Grid>
 
           {/* NIHSS Fields with Radio Buttons */}
           {renderRadioGroup("Vigilance", "vigilance", valueRange.vigilance)}
@@ -289,37 +296,50 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
           {renderRadioGroup("Oculomotricité", "oculomotricite", valueRange.oculomotricite)}
           {renderRadioGroup("Champ Visuel", "champVisuel", valueRange.champVisuel)}
           {renderRadioGroup("Paralysie Faciale", "paralysieFaciale", valueRange.paralysieFaciale)}
-          {renderRadioGroup("Motricité Membre Sup. (G)", "motriciteMembreSupG", valueRange.motriciteMembreSupG)}
-          {renderRadioGroup("Motricité Membre Sup. (D)", "motriciteMembreSupD", valueRange.motriciteMembreSupD)}
-          {renderRadioGroup("Motricité Membre Inf. (G)", "motriciteMembreIntG", valueRange.motriciteMembreIntG)}
-          {renderRadioGroup("Motricité Membre Inf. (D)", "motriciteMembreIntD", valueRange.motriciteMembreIntD)}
+          {renderRadioGroup("Motricité Membre Sup (G)", "motriciteMembreSupG", valueRange.motriciteMembreSupG)}
+          {renderRadioGroup("Motricité Membre Sup (D)", "motriciteMembreSupD", valueRange.motriciteMembreSupD)}
+          {renderRadioGroup("Motricité Membre Int (G)", "motriciteMembreIntG", valueRange.motriciteMembreIntG)}
+          {renderRadioGroup("Motricité Membre Int (D)", "motriciteMembreIntD", valueRange.motriciteMembreIntD)}
           {renderRadioGroup("Ataxie", "ataxie", valueRange.ataxie)}
           {renderRadioGroup("Sensibilité", "sensibilite", valueRange.sensibilite)}
           {renderRadioGroup("Langage", "langage", valueRange.langage)}
           {renderRadioGroup("Dysarthrie", "dysarthrie", valueRange.dysarthrie)}
-          {renderRadioGroup("Extinction / Négligence", "extinctionNegligence", valueRange.extinctionNegligence)}
+          {renderRadioGroup("Extinction Négligence", "extinctionNegligence", valueRange.extinctionNegligence)}
 
           {/* Total */}
-          <TextField
-            label="Total Auto"
-            name="totalAuto"
-            value={NihssData.totalAuto || ''}
-            disabled
-            fullWidth
-          />
+          <Grid item xs={4}>
+            <Typography variant="h4">Total</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              label="Total"
+              type="number"
+              name="totalAuto"
+              value={NihssData.totalAuto || ''}
+              disabled={true}
+              margin="normal"
+            />
+          </Grid>
 
-          {/* Submit Button */}
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Button onClick={handleClose} variant="outlined">
-              Annuler
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Mettre à jour
-            </Button>
-          </Box>
-        </Stack>
-      </form>
-    </Box>
+        </Grid>
+      </Box>
+      
+      <Box height={30} />
+      <Stack direction="row" spacing={2}>
+        <Button
+          type="submit"
+          variant="contained"
+          endIcon={<Send />}
+          className="button"
+        >
+          Mettre à jour
+        </Button>
+        <Button onClick={handleClose} variant="outlined">
+          Annuler
+        </Button>
+      </Stack>
+    </form>
   );
 }
 
