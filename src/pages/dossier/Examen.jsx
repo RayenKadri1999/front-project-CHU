@@ -42,12 +42,13 @@ export default function ExamenClinique({ mode = "Edit" }) {
 
     const [isEditable, setIsEditable] = useState(false);
     const [isDataAvailable, setIsDataAvailable] = useState(true);
+    const [isNihssDataAvailable, setIsNihssDataAvailable] = useState(false);
     const [idNihss, setidNihss] = useState();
     const [successMessage, setSuccessMessage] = useState("");
     const [error, setError] = useState(null);
     const [examenCliniqueData, setExamenCliniqueData] = useState({
         NIHSSValue: "",
-        idNIHSS: null,
+        idNIHSS: "",
         LASTInitial: "",
         ResultExamenNeuroInitial: "",
         TA: "",
@@ -109,6 +110,9 @@ export default function ExamenClinique({ mode = "Edit" }) {
     };
 
     const handleClose = (setOpenfunc) => {
+        console.log('Modal closing, current state:');
+        console.log('isNihssDataAvailable:', isNihssDataAvailable);
+        console.log('examenCliniqueData.idNIHSS:', examenCliniqueData.idNIHSS);
         setOpenfunc(false);
     };
 
@@ -183,11 +187,37 @@ export default function ExamenClinique({ mode = "Edit" }) {
 
     const handleSubmitDetNihss = async (e) => {
         e.preventDefault();
-        const url = isDataAvailable
+        
+        console.log('NIHSS submission debug:');
+        console.log('isNihssDataAvailable:', isNihssDataAvailable);
+        console.log('examenCliniqueData.idNIHSS:', examenCliniqueData.idNIHSS);
+        console.log('idNihss:', idNihss);
+        
+        const url = isNihssDataAvailable
             ? `http://localhost:3000/api/nihss/update/${examenCliniqueData.idNIHSS}`
             : `http://localhost:3000/api/nihss/create`;
 
-        const method = isDataAvailable ? "PUT" : "POST";
+        console.log('Using URL:', url);
+
+        const method = "POST";
+
+        // Clean the NIHSS data before sending
+        const cleanedNihssData = Object.fromEntries(
+            Object.entries(NihssData).filter(([key, value]) => {
+                // Remove MongoDB-specific fields for updates
+                if (isNihssDataAvailable && (key === '_id' || key === '__v')) return false;
+                // Remove null or empty string values  
+                if (value === null || value === '') return false;
+                return true;
+            })
+        );
+
+        // Add matricule for new records
+        if (!isNihssDataAvailable) {
+            cleanedNihssData.matricule = id;
+        }
+
+        console.log('Sending cleaned NIHSS data:', cleanedNihssData);
 
         try {
             const response = await fetch(url, {
@@ -196,7 +226,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                     "Content-Type": "application/json",
                     "x-access-token": authHeader()["x-access-token"],
                 },
-                body: JSON.stringify(NihssData),
+                body: JSON.stringify(cleanedNihssData),
             });
 
             if (response.status === 201 || response.status === 200) {
@@ -204,10 +234,11 @@ export default function ExamenClinique({ mode = "Edit" }) {
 
                 console.log("Nihss updated successfully!");
 
-                if (!isDataAvailable) {
+                if (!isNihssDataAvailable) {
                     const { nihssId } = await response.json();
                     console.log(nihssId);
                     submitedexamenData.idNIHSS = nihssId;
+                    setIsNihssDataAvailable(true);
                 }
                 const cleanedexamenData = cleanData(submitedexamenData);
 
@@ -237,40 +268,29 @@ export default function ExamenClinique({ mode = "Edit" }) {
     };
 
     useEffect(() => {
-        console.log('Loading examen clinique data for id:', id);
         apiServices.loadDossierDetails(
             setExamenCliniqueData,
             "examenclinique",
             setIsDataAvailable,
             setError,
             id
-        ).then((data) => {
-            console.log('Loaded examen clinique data:', data);
-            console.log('idNIHSS value:', data?.idNIHSS);
-            
-            // If data is loaded but idNIHSS is undefined, explicitly set it to null
-            if (data && data.idNIHSS === undefined) {
-                setExamenCliniqueData(prevData => ({
-                    ...prevData,
-                    idNIHSS: null
-                }));
-            }
-        });
+        );
     }, []);
 
     useEffect(() => {
-        console.log('examenCliniqueData.idNIHSS changed:', examenCliniqueData.idNIHSS);
-        console.log('Full examenCliniqueData:', examenCliniqueData);
+        console.log('NIHSS availability effect triggered:');
+        console.log('examenCliniqueData.idNIHSS:', examenCliniqueData.idNIHSS);
         
-        // Check if idNIHSS exists and is not null/undefined/empty string
-        if (examenCliniqueData.idNIHSS && examenCliniqueData.idNIHSS !== null && examenCliniqueData.idNIHSS !== '') {
-            console.log('Setting idNihss to:', examenCliniqueData.idNIHSS);
+        if (examenCliniqueData.idNIHSS) {
+            console.log('Setting NIHSS as available');
             setidNihss(examenCliniqueData.idNIHSS);
+            setIsNihssDataAvailable(true);
         } else {
-            console.log('idNIHSS is falsy or null:', examenCliniqueData.idNIHSS);
-            setidNihss(null); // Clear the idNihss state
+            console.log('Setting NIHSS as not available');
+            setidNihss(null);
+            setIsNihssDataAvailable(false);
         }
-    }, [examenCliniqueData]);
+    }, [examenCliniqueData.idNIHSS]);
 
     return (
         <ThemeProvider theme={theme}>
@@ -283,11 +303,10 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         setData: setExamenCliniqueData,
                         setNihssData: setNihssData,
                         setSuccessMessage: setSuccessMessage,
-                        matricule: id,
                     }}
                 />
                 <ModalDialog
-                    open={openDetails && idNihss}
+                    open={openDetails}
                     handleClose={() => handleClose(setOpenDetails)}
                     FormComponent={DetailsNihssForm}
                     formProps={{
@@ -338,17 +357,21 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 type="number"
                                 name="NIHSSValue"
                                 onChange={handleChange}
-                                value={examenCliniqueData.NIHSSValue || ''}
+                                value={examenCliniqueData.NIHSSValue}
                                 label="NIHSS Initial"
                                 fullWidth
                                 disabled={true}
                             />
 
-                            {!isDataAvailable ? (
+                            {!isNihssDataAvailable ? (
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => handleOpen(setOpenAdd)}
+                                    onClick={() => {
+                                        console.log('Add NIHSS button clicked');
+                                        console.log('isNihssDataAvailable:', isNihssDataAvailable);
+                                        handleOpen(setOpenAdd);
+                                    }}
                                     sx={{ minWidth: 40, height: 40 }}
                                     disabled={!isEditable}
                                 >
@@ -358,7 +381,12 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 <Button
                                     variant="contained"
                                     color="primary"
-                                    onClick={() => handleOpen(setOpenDetails)}
+                                    onClick={() => {
+                                        console.log('Edit NIHSS button clicked');
+                                        console.log('isNihssDataAvailable:', isNihssDataAvailable);
+                                        console.log('examenCliniqueData.idNIHSS:', examenCliniqueData.idNIHSS);
+                                        handleOpen(setOpenDetails);
+                                    }}
                                     sx={{ minWidth: 40, height: 40 }}
                                     disabled={!isEditable || !examenCliniqueData.idNIHSS}
                                 >
@@ -369,7 +397,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 type="number"
                                 name="LASTInitial"
                                 onChange={handleChange}
-                                value={examenCliniqueData.LASTInitial || ''}
+                                value={examenCliniqueData.LASTInitial}
                                 label="Last Initial"
                                 fullWidth
                                 disabled={!isEditable}
@@ -388,7 +416,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 label=""
                                 disabled={!isEditable}
                                 value={
-                                    examenCliniqueData.ResultExamenNeuroInitial || ''
+                                    examenCliniqueData.ResultExamenNeuroInitial
                                 }
                                 onChange={handleChange}
                                 multiline
@@ -420,7 +448,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         >
                             <TextField
                                 name="TA"
-                                value={examenCliniqueData.TA || ''}
+                                value={examenCliniqueData.TA}
                                 label="TA"
                                 onChange={handleChange}
                                 fullWidth
@@ -428,7 +456,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             />
                             <TextField
                                 name="Dextro"
-                                value={examenCliniqueData.Dextro || ''}
+                                value={examenCliniqueData.Dextro}
                                 label="Dextro"
                                 onChange={handleChange}
                                 fullWidth
@@ -436,7 +464,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             />
                             <TextField
                                 name="AuscultationCardiaque"
-                                value={examenCliniqueData.AuscultationCardiaque || ''}
+                                value={examenCliniqueData.AuscultationCardiaque}
                                 label="Auscultation Cardiaque"
                                 onChange={handleChange}
                                 fullWidth
@@ -445,7 +473,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                             <TextField
                                 name="AuscultationPulmonaire"
                                 value={
-                                    examenCliniqueData.AuscultationPulmonaire || ''
+                                    examenCliniqueData.AuscultationPulmonaire
                                 }
                                 label="Auscultation Pulmonaire"
                                 onChange={handleChange}
@@ -458,7 +486,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 <RadioGroup
                                     row
                                     name="SouffleCarotidien"
-                                    value={examenCliniqueData.SouffleCarotidien || ''}
+                                    value={examenCliniqueData.SouffleCarotidien}
                                     onChange={handleChange}
                                     sx={{ mb: 2 }}
                                 >
@@ -574,7 +602,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
                                 name="ResultsExamenGeneral"
                                 label=""
                                 disabled={!isEditable}
-                                value={examenCliniqueData.ResultsExamenGeneral || ''}
+                                value={examenCliniqueData.ResultsExamenGeneral}
                                 onChange={handleChange}
                                 multiline
                                 rows={4}

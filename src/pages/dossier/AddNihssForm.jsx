@@ -30,7 +30,7 @@ const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
 
   // Date and Heure
   date: new Date(),
-
+  heure: new Date(),
 
   // Total auto.
   totalAuto: '',
@@ -67,21 +67,21 @@ const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
   });
 
   const valueRange = {
-    vigilance: 3,
-    orientation: 2,
-    commandes: 2,
-    oculomotricite: 2,
-    champVisuel: 3,
-    paralysieFaciale: 3,
+    vigilance: 4,
+    orientation: 4,
+    commandes: 4,
+    oculomotricite: 4,
+    champVisuel: 4,
+    paralysieFaciale: 4,
     motriciteMembreSupG: 4,
     motriciteMembreSupD: 4,
     motriciteMembreIntG: 4,
     motriciteMembreIntD: 4,
-    ataxie: 2,
-    sensibilite: 2,
-    langage: 3,
-    dysarthrie: 2,
-    extinctionNegligence: 2,
+    ataxie: 4,
+    sensibilite: 4,
+    langage: 4,
+    dysarthrie: 4,
+    extinctionNegligence: 4,
   };
 
   
@@ -215,7 +215,7 @@ const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
         <FormControl component="fieldset" sx={{ width: '100%' }}>
           <RadioGroup 
             row 
-            value={PreData[fieldName]} 
+            value={PreData[fieldName] || ''} 
             onChange={(e) => setPreData(prevData => ({ ...prevData, [fieldName]: e.target.value }))}
             sx={{ gap: 1 }}
           >
@@ -281,25 +281,32 @@ const AddNihssForm = ({handleClose,setData,setNihssData,setSuccessMessage}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Clean the data before saving - remove null/empty values and any _id field
+    const cleanedData = Object.fromEntries(
+      Object.entries(PreData).filter(([key, value]) => {
+        // Remove _id field if it exists
+        if (key === '_id' || key === '__v') return false;
+        // Remove null or empty string values
+        if (value === null || value === '') return false;
+        return true;
+      })
+    );
     
-        // Patient updated successfully
-        setCreateSuccess(true);
-     
-        setNihssData((prevState) => ({
-          ...prevState,  // Keep the existing values
-          ...PreData     // Overwrite with values from PreData (only if they exist in PreData)
-        }));
-    
-        setData(prevData => ({
-          ...prevData,
-          NIHSSValue: PreData.totalAuto,
-         
-        }));
+    // Patient updated successfully
+    setCreateSuccess(true);
+ 
+    setNihssData((prevState) => ({
+      ...prevState,  // Keep the existing values
+      ...cleanedData     // Overwrite with values from cleaned PreData
+    }));
 
-      
-        handleClose();
-      
+    setData(prevData => ({
+      ...prevData,
+      NIHSSValue: PreData.totalAuto,
      
+    }));
+
+    handleClose();
   };
 
   return (
@@ -385,9 +392,9 @@ required
                       label="Heure"
                          
                       required
-                          value={dayjs(PreData.date)}
+                          value={dayjs(PreData.heure)}
                           
-                          onChange={handleChangeTime('date')}
+                          onChange={handleChangeTime('heure')}
                   
                         
                         />

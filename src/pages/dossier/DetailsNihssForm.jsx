@@ -16,6 +16,8 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
 import apiServices from "../../services/api-services";
 import { Send } from "lucide-react";
@@ -27,6 +29,7 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
   const [NihssData, setNihssDataLocal] = useState({
     categorie: '',
     date: new Date(),
+    heure: new Date(),
     totalAuto: '',
     vigilance: '',
     orientation: '',
@@ -46,21 +49,21 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
   });
 
   const valueRange = {
-    vigilance: 3,
-    orientation: 2,
-    commandes: 2,
-    oculomotricite: 2,
-    champVisuel: 3,
-    paralysieFaciale: 3,
+    vigilance: 4,
+    orientation: 4,
+    commandes: 4,
+    oculomotricite: 4,
+    champVisuel: 4,
+    paralysieFaciale: 4,
     motriciteMembreSupG: 4,
     motriciteMembreSupD: 4,
     motriciteMembreIntG: 4,
     motriciteMembreIntD: 4,
-    ataxie: 2,
-    sensibilite: 2,
-    langage: 3,
-    dysarthrie: 2,
-    extinctionNegligence: 2,
+    ataxie: 4,
+    sensibilite: 4,
+    langage: 4,
+    dysarthrie: 4,
+    extinctionNegligence: 4,
   };
 
   // Load existing NIHSS data
@@ -139,24 +142,41 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
     }));
   };
 
+  const handleChangeDate = (name) => (value) => {
+    const updatedDateTime = dayjs(NihssData[name]).set('year', value.year())
+      .set('month', value.month())
+      .set('date', value.date());
+
+    setNihssDataLocal((prevData) => ({
+      ...prevData,
+      [name]: updatedDateTime,
+    }));
+  };
+
+  const handleChangeTime = (name) => (value) => {
+    const updatedDateTime = dayjs(NihssData[name]).set('hour', value.hour())
+      .set('minute', value.minute());
+
+    setNihssDataLocal((prevData) => ({
+      ...prevData,
+      [name]: updatedDateTime,
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    console.log('DetailsNihssForm handleSubmit called');
+    console.log('NihssData:', NihssData);
+    console.log('idNihss:', idNihss);
     
     // Update the parent components with the new data
     if (setNihssData) {
       setNihssData(NihssData);
     }
     
-    apiServices.handleSubmitModal(
-      e,
-      NihssData,
-      "nihss",
-      setSuccessMessage,
-      true,
-      handleClose,
-      setError,
-      idNihss
-    );
+    // Close the modal - let the parent handle the actual API submission
+    handleClose();
   };
 
   const renderRadioGroup = (label, fieldName, maxValue) => (
@@ -170,7 +190,7 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
         <FormControl component="fieldset" sx={{ width: '100%' }}>
           <RadioGroup 
             row 
-            value={NihssData[fieldName]} 
+            value={NihssData[fieldName] || ''} 
             onChange={(e) => handleRadioChange(fieldName, e.target.value)}
             sx={{ gap: 1 }}
           >
@@ -277,15 +297,28 @@ function DetailsNihssForm({ handleClose, idNihss, setData, setNihssData, setSucc
               <DatePicker
                 label="Date"
                 name="date"
-                onChange={(newValue) => {
-                  setNihssDataLocal((prevData) => ({
-                    ...prevData,
-                    date: newValue ? newValue.toDate() : new Date(),
-                  }));
-                }}
+                onChange={handleChangeDate('date')}
                 value={dayjs(NihssData.date)}
                 format="DD/MM/YYYY"
+                required
               />
+            </LocalizationProvider>
+          </Grid>
+
+          {/* Heure */}
+          <Grid item xs={4}>
+            <Typography variant="h6">Heure</Typography>
+          </Grid>
+          <Grid item xs={8}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={["TimePicker"]}>
+                <TimePicker
+                  label="Heure"
+                  required
+                  value={dayjs(NihssData.heure)}
+                  onChange={handleChangeTime('heure')}
+                />
+              </DemoContainer>
             </LocalizationProvider>
           </Grid>
 

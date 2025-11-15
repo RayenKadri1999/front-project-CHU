@@ -16,8 +16,8 @@ import { Alert, Typography } from "@mui/material";
 import {PlusIcon } from "lucide-react";
 import { DataGrid } from "@mui/x-data-grid";
 import authHeader from "../../../services/auth-header";
-import DetailsNihss from "./DetailsNihss";
-// Removed modal forms - using standalone components instead
+import AddNihssForm from "../AddNihssForm";
+import DetailsNihssForm from "../DetailsNihssForm";
 import ModalDialog from "../ModalDialog";
 import Notifications from "../../../components/shared/Notifications";
 
@@ -127,7 +127,7 @@ const[successMessage,setSuccessMessage]=useState("")
       <ModalDialog open={openAdd}
        handleClose={() => handleClose(setOpenAdd)} 
 
-      FormComponent={null} 
+      FormComponent={AddNihssForm} 
 
   formProps={{                  // Pass the props that the form needs
     setNewNihss:setNewNihss, 
@@ -136,7 +136,7 @@ const[successMessage,setSuccessMessage]=useState("")
     setSuccessMessage:setSuccessMessage,
   }}
   />
-      <ModalDialog open={openDetails} handleClose={() => handleClose(setOpenDetails)}  FormComponent={DetailsNihss}
+      <ModalDialog open={openDetails} handleClose={() => handleClose(setOpenDetails)}  FormComponent={DetailsNihssForm}
       formProps={{      
         setDetailsNihss: setDetailsNihss,            
        idNihss: idNihss,
