@@ -136,7 +136,7 @@ export default function Prehospitaliere({ mode = "Edit" }) {
   return (
     <>
      <ThemeProvider theme={theme}>
-      <Box component="main" sx={{ display: "flex",flexDirection: "column" ,flexGrow: 1, p: 3 }}>
+      <Box ponent="main" sx={{ display: "flex",flexDirection: "column" ,flexGrow: 1, p: 3 }}>
         
 
          

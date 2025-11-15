@@ -179,10 +179,6 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
     //   }
     // };
 
-    useEffect(() => {
-        console.log("hospitaliereData", hospitaliereData);
-    }, [hospitaliereData]);
-
     const handleSubmit = (e) => {
         // Filter out null, undefined, and empty string values
         const filteredHospitaliereData = {};
@@ -205,20 +201,33 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
             id
         );
     };
-    // console.log("success");
-    // console.log(error);
-    function loadHospitaliereDetails() {
-        apiServices.loadDossierDetails(
-            setHospitaliereData,
-            "hospitaliere",
-            setIsDataAvailable,
-            setError,
-            id
-        );
+
+    async function loadHospitaliereDetails() {
+        try {
+            console.log("🔍 Loading hospitaliere details for patient ID:", id);
+            const result = await apiServices.loadDossierDetails(
+                setHospitaliereData,
+                "hospitaliere",
+                setIsDataAvailable,
+                setError,
+                id
+            );
+            console.log("📥 Backend response received:", result);
+            console.log("📝 Comments in response:", result?.reviewInfo?.comments);
+            console.log("📊 Total comments count:", result?.reviewInfo?.comments?.length || 0);
+        } catch (error) {
+            console.error("❌ Error loading hospitaliere details:", error);
+        }
     }
     useEffect(() => {
         loadHospitaliereDetails();
     }, []);
+
+    useEffect(() => {
+        console.log("🔄 hospitaliereData state updated:", hospitaliereData);
+        console.log("💬 Comments in state:", hospitaliereData?.reviewInfo?.comments);
+        console.log("🆔 Entity ID for comments:", hospitaliereData?._id);
+    }, [hospitaliereData]);
 
     if (loading) {
         return <Typography variant="h6">Loading...</Typography>;
