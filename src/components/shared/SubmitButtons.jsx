@@ -51,7 +51,7 @@ const SubmitButtons = ({
     };
 
     return (
-        <Box mt={3}>
+        <Box mt={3} >
             <Stack direction="row" spacing={2}>
                 <Button
                     variant="contained"
@@ -87,10 +87,11 @@ const SubmitButtons = ({
             </Stack>
 
             {commentMode && (
-                <Paper
+                <>
+                    <Paper
                     variant="outlined"
                     sx={{
-                        mt: 2,
+                        mt: 1,
                         p: 2,
                         borderRadius: 2,
                         borderColor: focused ? "primary.main" : "divider",
@@ -130,6 +131,7 @@ const SubmitButtons = ({
                         </Button>
                     </Stack>
                 </Paper>
+                </>
             )}
         </Box>
     );

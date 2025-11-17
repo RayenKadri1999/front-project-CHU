@@ -23,6 +23,8 @@ import authHeader from "../../services/auth-header";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import ModalDialog from "./ModalDialog";
 import AddNihssForm from "./AddNihssForm";
@@ -37,7 +39,7 @@ const theme = createTheme({
     },
 });
 
-export default function ExamenClinique({ mode = "Edit" }) {
+export default function ExamenClinique({ mode = "Edit", tabName }) {
     const { idDossier, id } = useParams();
 
     const [isEditable, setIsEditable] = useState(false);
@@ -104,6 +106,40 @@ export default function ExamenClinique({ mode = "Edit" }) {
 
     const [openAdd, setOpenAdd] = useState(false);
     const [openDetails, setOpenDetails] = useState(false);
+
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('ExamenClinique', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            setError('Failed to add comment');
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
+
+    const ApproveExamenClinique = () => {
+        axios.put(
+            `http://localhost:3000/api/review/${tabName}/${examenCliniqueData?._id || ""}/reviewInfo/state`,
+            { status: "Accepté" },
+            { headers: authHeader() }
+        );
+    };
 
     const handleOpen = (setOpenfunc) => {
         setOpenfunc(true);
@@ -267,7 +303,7 @@ export default function ExamenClinique({ mode = "Edit" }) {
         handleSubmitDetNihss(e);
     };
 
-    useEffect(() => {
+    function loadExamenCliniqueDetails() {
         apiServices.loadDossierDetails(
             setExamenCliniqueData,
             "examenclinique",
@@ -275,6 +311,10 @@ export default function ExamenClinique({ mode = "Edit" }) {
             setError,
             id
         );
+    }
+
+    useEffect(() => {
+        loadExamenCliniqueDetails();
     }, []);
 
     useEffect(() => {
@@ -612,10 +652,14 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         </Box>
 
                         <SubmitButtons
+                            handleSubmit={handleSubmit}
                             isDataAvailable={isDataAvailable}
                             setIsEditable={setIsEditable}
                             isEditable={isEditable}
+                            onSubmitComment={handleAddCommentSafe}
                             mode={mode}
+                            onApprove={ApproveExamenClinique}
+                            tabName={tabName}
                         />
 
                         {successMessage && (
@@ -626,6 +670,16 @@ export default function ExamenClinique({ mode = "Edit" }) {
                         )}
                     </Box>
                 </form>
+
+                {/* Comments Section - Completely separate from form */}
+                {isAuthenticated() && (
+                    <SectionCommentaires
+                        comments={comments}
+                        onEditComment={editComment}
+                        onDeleteComment={deleteComment}
+                        loading={commentsLoading}
+                    />
+                )}
             </Box>
         </ThemeProvider>
     );

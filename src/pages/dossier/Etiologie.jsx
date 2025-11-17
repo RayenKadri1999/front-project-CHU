@@ -9,6 +9,10 @@ import apiServices from "../../services/api-services";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 import PdfButton from "../../components/shared/PdfButton";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import axios from "axios";
+import authHeader from "../../services/auth-header";
 
 // Configuration data
 const TOAST_CONFIG = {
@@ -46,7 +50,7 @@ const INDETERMINE_OPTIONS = [
 
 const ASCOD_FIELDS = ["A", "S", "C", "O", "D"];
 
-export default function Etiologie({ mode = "Edit" }) {
+export default function Etiologie({ mode = "Edit", tabName }) {
     const { id } = useParams();
     const theme = createTheme({ palette: { primary: { main: "#0E8388" } } });
 
@@ -68,6 +72,32 @@ export default function Etiologie({ mode = "Edit" }) {
         },
         ASCODData: { A: "", S: "", C: "", O: "", D: "", info: "", matricule: id }
     });
+
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('Etiologie', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            updateState({ error: 'Failed to add comment' });
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
 
     // Generic handlers
     const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
@@ -210,6 +240,31 @@ export default function Etiologie({ mode = "Edit" }) {
         );
     }, []);
 
+    // Approval function
+    const approveEtiologie = async () => {
+        try {
+            const response = await axios.put(
+                `/api/review/Etiologie/${id}/approve`,
+                {},
+                { headers: authHeader() }
+            );
+            if (response.status === 200) {
+                updateState({ successMessage: 'Section approved successfully' });
+                // Refresh data to get updated approval status
+                apiServices.loadDossierDetails(
+                    (data) => updateState({ TOASTData: data }),
+                    "etiologie/toast", 
+                    (val) => updateState({ isDataAvailable: val }),
+                    (err) => updateState({ error: err }), 
+                    id
+                );
+            }
+        } catch (error) {
+            console.error('Error approving section:', error);
+            updateState({ error: 'Failed to approve section' });
+        }
+    };
+
     return (
         <ThemeProvider theme={theme}>
             {/* TOAST Form */}
@@ -268,10 +323,14 @@ export default function Etiologie({ mode = "Edit" }) {
                     />
 
                     <SubmitButtons
+                        handleSubmit={handleSubmit('TOASTData', 'etiologie/toast')}
                         isDataAvailable={state.isDataAvailable}
                         setIsEditable={(val) => updateState({ isEditable: val })}
                         isEditable={state.isEditable}
+                        onSubmitComment={handleAddCommentSafe}
                         mode={mode}
+                        onApprove={approveEtiologie}
+                        tabName={tabName}
                     />
                 </Box>
             </form>
@@ -319,12 +378,27 @@ export default function Etiologie({ mode = "Edit" }) {
                     />
 
                     <SubmitButtons
+                        handleSubmit={handleSubmit('ASCODData', 'etiologie/ascod')}
                         isDataAvailable={state.isDataASCODAvailable}
                         setIsEditable={(val) => updateState({ isASCODEditable: val })}
                         isEditable={state.isASCODEditable}
+                        onSubmitComment={handleAddCommentSafe}
+                        mode={mode}
+                        onApprove={approveEtiologie}
+                        tabName={tabName}
                     />
                 </Box>
             </form>
+
+            {/* Comments Section - Completely separate from form */}
+            {isAuthenticated() && (
+                <SectionCommentaires
+                    comments={comments}
+                    onEditComment={editComment}
+                    onDeleteComment={deleteComment}
+                    loading={commentsLoading}
+                />
+            )}
 
             {state.successMessage && (
                 <Notifications

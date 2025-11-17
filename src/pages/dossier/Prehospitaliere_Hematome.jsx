@@ -69,7 +69,7 @@ export default function Prehospitaliere_Hematome({ mode = "Edit" }) {
             [name]: value,
         }));
         if (name === "quiAppelNeurologue") {
-            if( value === "Autre"){
+            if( value === "Autres"){
                 setShowOtherTextField(true);
 
             }else{
@@ -80,7 +80,7 @@ export default function Prehospitaliere_Hematome({ mode = "Edit" }) {
                 }));
             }
         } else if (name === "motifAppel") {
-            if( value === "Autre motif"){
+            if( value === "Autres"){
                 setShowOtherTextField2(true);
 
             }else{
@@ -174,7 +174,7 @@ export default function Prehospitaliere_Hematome({ mode = "Edit" }) {
                                         label="Consultations externes"
                                         disabled={!isEditable}
                                     />
-                                    <FormControlLabel value="Autre" control={<Radio />} label="Autre" disabled={!isEditable} />
+                                    <FormControlLabel value="Autres" control={<Radio />} label="Autres" disabled={!isEditable} />
                                 </RadioGroup>
                             </FormControl>
 
@@ -266,7 +266,7 @@ export default function Prehospitaliere_Hematome({ mode = "Edit" }) {
                                     <FormControlLabel value="Cephalées" control={<Radio />} label="Cephalées" disabled={!isEditable} />
                                     <FormControlLabel value="Vertiges" control={<Radio />} label="Vertiges" disabled={!isEditable} />
                                     <FormControlLabel value="Trouble de la conscience" control={<Radio />} label="Trouble de la conscience" disabled={!isEditable} />
-                                    <FormControlLabel value="Autre motif" control={<Radio />} label="Autre motif" disabled={!isEditable} />
+                                    <FormControlLabel value="Autres" control={<Radio />} label="Autres" disabled={!isEditable} />
                                 </RadioGroup>
                             </FormControl>
 

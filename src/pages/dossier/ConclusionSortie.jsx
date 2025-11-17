@@ -8,6 +8,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
+import axios from "axios";
 import {
     Button,
     IconButton,
@@ -18,18 +19,21 @@ import {
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { Delete as DeleteIcon } from "@mui/icons-material";
-import authHeader from "../../services/auth-header";
+// import authHeader from "../../services/auth-header";
 import PdfButton from "../../components/shared/PdfButton";
 
 import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
 import ModalDialog from "./ModalDialog";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import authHeader from "../../services/auth-header";
 
 
 
 
-export default function ConclusionSortie({ mode = "Edit" }) {
+export default function ConclusionSortie({ mode = "Edit", tabName }) {
     const { idDossier, id } = useParams();
     const theme = createTheme({
         palette: {
@@ -55,6 +59,41 @@ export default function ConclusionSortie({ mode = "Edit" }) {
         Conclusion: "",
         matricule: id,
     });
+
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('ConclusionSortie', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            setError('Failed to add comment');
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
+
+    const ApproveConclusionSortie = () => {
+        axios.put(
+            `http://localhost:3000/api/review/${tabName}/${conclusionSortieData?._id || ""}/reviewInfo/state`,
+            { status: "Accepté" },
+            { headers: authHeader() }
+        );
+    };
+
     const cleanData = (data) => {
         // Create a new object to avoid mutating the original one
         let cleanedData = { ...data };
@@ -184,7 +223,7 @@ export default function ConclusionSortie({ mode = "Edit" }) {
     const handleSubmit = (e) => {
         handleSubmitDetNihss(e); // Call the second function
     };
-    useEffect(() => {
+    function loadConclusionSortieDetails() {
         apiServices.loadDossierDetails(
             setConclusionSortieData,
             "conclusionsortie",
@@ -192,6 +231,10 @@ export default function ConclusionSortie({ mode = "Edit" }) {
             setError,
             id
         );
+    }
+
+    useEffect(() => {
+        loadConclusionSortieDetails();
     }, []);
 
     useEffect(() => {
@@ -511,10 +554,14 @@ export default function ConclusionSortie({ mode = "Edit" }) {
                             </Button>
                         </Box>
                         <SubmitButtons
+                            handleSubmit={handleSubmit}
                             isDataAvailable={isDataAvailable}
                             setIsEditable={setIsEditable}
                             isEditable={isEditable}
+                            onSubmitComment={handleAddCommentSafe}
                             mode={mode}
+                            onApprove={ApproveConclusionSortie}
+                            tabName={tabName}
                         />
 
                         {successMessage && (
@@ -524,6 +571,16 @@ export default function ConclusionSortie({ mode = "Edit" }) {
                             />
                         )}
                     </form>
+
+                    {/* Comments Section - Completely separate from form */}
+                    {isAuthenticated() && (
+                        <SectionCommentaires
+                            comments={comments}
+                            onEditComment={editComment}
+                            onDeleteComment={deleteComment}
+                            loading={commentsLoading}
+                        />
+                    )}
                 </Box>
             </Box>
         </ThemeProvider>

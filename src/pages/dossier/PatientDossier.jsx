@@ -286,6 +286,7 @@ const PatientDossier = ({ mode }) => {
                         <Stack gap={2} width="100%" px={{ xs: 2, xl: 4 }}>
                             {tabsConfigList.map((tab, index) => (
                                 <Button
+                                    key={tab.key}
                                     fullWidth
                                     onClick={() => setActiveComponent(tab.key)}
                                     startIcon={tab.icon}

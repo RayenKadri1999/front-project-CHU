@@ -83,11 +83,31 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
 
-    const { addComment, editComment, deleteComment } = useComments({
-        modelName: tabName,
-        entityId: hospitaliereData._id || "", // fallback until fetch finishes
-        fetchEntity: loadHospitaliereDetails,
-    });
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('Hospitaliere', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            setError('Failed to add comment');
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
 
     const ApproveHospitaliere = () => {
         axios.put(
@@ -203,31 +223,19 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
     };
 
     async function loadHospitaliereDetails() {
-        try {
-            console.log("🔍 Loading hospitaliere details for patient ID:", id);
-            const result = await apiServices.loadDossierDetails(
-                setHospitaliereData,
-                "hospitaliere",
-                setIsDataAvailable,
-                setError,
-                id
-            );
-            console.log("📥 Backend response received:", result);
-            console.log("📝 Comments in response:", result?.reviewInfo?.comments);
-            console.log("📊 Total comments count:", result?.reviewInfo?.comments?.length || 0);
-        } catch (error) {
-            console.error("❌ Error loading hospitaliere details:", error);
-        }
+        apiServices.loadDossierDetails(
+            setHospitaliereData,
+            "hospitaliere",
+            setIsDataAvailable,
+            setError,
+            id
+        );
     }
     useEffect(() => {
         loadHospitaliereDetails();
     }, []);
 
-    useEffect(() => {
-        console.log("🔄 hospitaliereData state updated:", hospitaliereData);
-        console.log("💬 Comments in state:", hospitaliereData?.reviewInfo?.comments);
-        console.log("🆔 Entity ID for comments:", hospitaliereData?._id);
-    }, [hospitaliereData]);
+
 
     if (loading) {
         return <Typography variant="h6">Loading...</Typography>;
@@ -640,20 +648,15 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                     />
 
                     <SubmitButtons
+                        handleSubmit={handleSubmit}
                         isDataAvailable={isDataAvailable}
                         setIsEditable={setIsEditable}
                         isEditable={isEditable}
-                        onSubmitComment={addComment}
+                        onSubmitComment={handleAddCommentSafe}
                         mode={mode}
                         onApprove={ApproveHospitaliere}
+                        tabName={tabName}
                     />
-                    <Box height={30}></Box>
-                    <SectionCommentaires
-                        comments={hospitaliereData.reviewInfo?.comments || []}
-                        onDelete={deleteComment}
-                        onEdit={editComment}
-                    />
-
                     {successMessage && (
                         <Notifications
                             Message={successMessage}
@@ -661,6 +664,16 @@ export default function Hospitaliere({ mode = "Edit", tabName }) {
                         />
                     )}
                 </form>
+
+                {/* Comments Section - Completely separate from form */}
+                {isAuthenticated() && (
+                    <SectionCommentaires
+                        comments={comments}
+                        onEditComment={editComment}
+                        onDeleteComment={deleteComment}
+                        loading={commentsLoading}
+                    />
+                )}
             </Box>
         </ThemeProvider>
     );

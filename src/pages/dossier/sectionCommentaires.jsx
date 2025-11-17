@@ -14,13 +14,21 @@ import {
 } from "@mui/icons-material";
 import authService from "../../services/auth-service";
 
+// Component for displaying existing comments only
+
 // props attendus :
 // comments: [{ _id, message, createdAt, createdBy: { _id, username } }]
-// onEdit: (commentId, newMessage) => void
-// onDelete: (commentId) => void
+// onEditComment: (commentId, newMessage) => void
+// onDeleteComment: (commentId) => void
+// loading: boolean
 // langue = français
 
-const SectionCommentaires = ({ comments, onEdit, onDelete,  }) => {
+const SectionCommentaires = ({ 
+    comments = [], 
+    onEditComment, 
+    onDeleteComment,
+    loading = false 
+}) => {
     const [editingId, setEditingId] = useState(null);
     const [editContent, setEditContent] = useState("");
     const currentUserId = String(authService.getCurrentUser().id);
@@ -32,7 +40,7 @@ const SectionCommentaires = ({ comments, onEdit, onDelete,  }) => {
 
     const handleSave = (id) => {
         if (editContent.trim()) {
-            onEdit(id, editContent.trim());
+            onEditComment(id, editContent.trim());
             setEditingId(null);
             setEditContent("");
         }
@@ -46,7 +54,7 @@ const SectionCommentaires = ({ comments, onEdit, onDelete,  }) => {
     };
 
     return (
-        <Stack spacing={2}>
+        <Stack spacing={2} sx={{ mt: 3 }}>
             {comments.length === 0 && (
                 <Typography variant="body2" color="text.secondary">
                     Aucun commentaire pour le moment.
@@ -141,7 +149,7 @@ const SectionCommentaires = ({ comments, onEdit, onDelete,  }) => {
                                     <IconButton
                                         size="small"
                                         color="error"
-                                        onClick={() => onDelete(comment._id)}
+                                        onClick={() => onDeleteComment(comment._id)}
                                     >
                                         <DeleteIcon fontSize="small" />
                                     </IconButton>
@@ -151,6 +159,8 @@ const SectionCommentaires = ({ comments, onEdit, onDelete,  }) => {
                     </Paper>
                 );
             })}
+
+
         </Stack>
     );
 };

@@ -14,6 +14,8 @@ import { useParams } from "react-router-dom";
 import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
 import { Alert } from "@mui/material";
 
 const theme = createTheme({
@@ -24,7 +26,7 @@ const theme = createTheme({
   },
 });
 
-export default function Biologie({mode = "Edit"}) {
+export default function Biologie({mode = "Edit", tabName}) {
   const {  idDossier,id } = useParams();
   // const { userId, roles } = useAuth();
 
@@ -65,6 +67,40 @@ export default function Biologie({mode = "Edit"}) {
   });
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState(null);
+
+  // Comments functionality - separate from form data
+  const {
+    comments,
+    addComment,
+    editComment,
+    deleteComment,
+    loading: commentsLoading
+  } = useComments('Biologie', id, null); // No refresh callback to avoid form interference
+
+  // Separate comment handler that doesn't trigger form validation
+  const handleAddCommentSafe = async (message) => {
+    try {
+      await addComment(message);
+      // Don't refresh form data, only comments
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      setError('Failed to add comment');
+    }
+  };
+
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user && user.accessToken;
+  };
+
+  const ApproveBiologie = () => {
+    axios.put(
+      `http://localhost:3000/api/review/${tabName}/${biologieData?._id || ""}/reviewInfo/state`,
+      { status: "Accepté" },
+      { headers: authHeader() }
+    );
+  };
   const cleanData = (data) => {
     // Create a new object to avoid mutating the original one
     let cleanedData = { ...data };
@@ -158,8 +194,12 @@ export default function Biologie({mode = "Edit"}) {
 
 
 
+   function loadBiologieDetails() {
+    apiServices.loadDossierDetails(setBiologieData,"biologie",setIsDataAvailable,setError,id);
+   }
+
    useEffect(() => {
-    apiServices.loadDossierDetails(setBiologieData,"biologie",setIsDataAvailable,setError,id)
+    loadBiologieDetails();
   }, []);
 
   return (
@@ -503,7 +543,26 @@ export default function Biologie({mode = "Edit"}) {
           </Stack> */}
 
 
-<SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
+<SubmitButtons 
+  handleSubmit={handleSubmit}
+  isDataAvailable={isDataAvailable} 
+  setIsEditable={setIsEditable} 
+  isEditable={isEditable} 
+  onSubmitComment={handleAddCommentSafe}
+  mode={mode}
+  onApprove={ApproveBiologie}
+  tabName={tabName}
+/>
+
+          {/* Comments Section - Completely separate from form */}
+          {isAuthenticated() && (
+            <SectionCommentaires
+              comments={comments}
+              onEditComment={editComment}
+              onDeleteComment={deleteComment}
+              loading={commentsLoading}
+            />
+          )}
 
 {successMessage && (
   <Notifications Message={successMessage} setMessage={setSuccessMessage}/>

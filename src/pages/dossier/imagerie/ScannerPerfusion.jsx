@@ -94,7 +94,13 @@ const PerfusionScanner = ({ id, handleChange2, mode = "Edit" }) => {
       <form onSubmit={handleSubmit}>
         <Box sx={{ mt: 4, p: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
             <Typography variant="h6">Scanner de perfusion</Typography>
-            {error && <Alert severity="info">{error}</Alert>}
+            {error && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                    {error.includes('404') || error.includes('not found') 
+                        ? 'Aucune donnée trouvée pour ce patient. Vous pouvez créer un nouveau dossier en cliquant sur "Modifier".' 
+                        : error}
+                </Alert>
+            )}
 {/* Oui / Non Radio Group */}
 <RadioGroup row name="status" defaultValue="Non" value={scannerPerfusionData.status} onChange={(event) => handleChange2(event, setScannerPerfusionData)}>
                 <FormControlLabel value="Oui" control={<Radio disabled={!isEditable}  />} label="Oui" />

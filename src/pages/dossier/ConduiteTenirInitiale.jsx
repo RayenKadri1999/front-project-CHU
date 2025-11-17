@@ -13,6 +13,7 @@ import {
     FormLabel,
     Select,
     MenuItem,
+    Alert,
 } from "@mui/material";
 import { LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -22,9 +23,13 @@ import FormControl from "@mui/material/FormControl";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import axios from "axios";
+import authHeader from "../../services/auth-header";
 import { useParams } from "react-router-dom";
 
-export default function PriseEnChargeAigue({mode = "Edit"}) {
+export default function PriseEnChargeAigue({mode = "Edit", tabName}) {
     const { idDossier, id } = useParams(); //added id props
     const theme = createTheme({
         palette: {
@@ -97,35 +102,41 @@ export default function PriseEnChargeAigue({mode = "Edit"}) {
         ReeducationMotriceHeure: null,
         matricule: id || "", // Initialize with 'id' or an empty string if 'id' is not yet available.
     });
-    const cleanData = (data) => {
-        // Create a new object to avoid mutating the original one
-        let cleanedData = { ...data };
-        delete cleanedData._id;
-        delete cleanedData.__v;
-        delete cleanedData.patient; //remove patient id from cleanded data
-        // Loop through the keys of the data
-        Object.keys(cleanedData).forEach((key) => {
-            // Remove fields that have an empty string or are unselected (null or undefined)
-            if (
-                cleanedData[key] === "" ||
-                cleanedData[key] === null ||
-                cleanedData[key] === undefined
-            ) {
-                delete cleanedData[key];
-            }
-        });
-
-        return cleanedData;
-    };
+    
     const [isEditable, setIsEditable] = useState(false);
     const [isDataAvailable, setIsDataAvailable] = useState(false); // Initialize to false
     const [conduiteTenirData, setconduiteTenirData] = useState({
         ...initialconduiteTenirdata,
         patient: id,
     });
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState("");
+
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('ConduiteTenirInitiale', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            setError('Failed to add comment');
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
 
     const SubSection = ({ title, name, value, handleChange, children ,isEditable }) => (
         <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -180,90 +191,85 @@ export default function PriseEnChargeAigue({mode = "Edit"}) {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const cleanData = (data) => {
+        // Create a new object to avoid mutating the original one
+        let cleanedData = { ...data };
+        
+        // Remove fields that shouldn't be sent to backend
+        delete cleanedData._id;
+        delete cleanedData.__v;
+        delete cleanedData.patient;
+        
+        // Loop through the keys of the data
+        Object.keys(cleanedData).forEach((key) => {
+            // Remove fields that have an empty string, null, or undefined values
+            if (
+                cleanedData[key] === "" ||
+                cleanedData[key] === null ||
+                cleanedData[key] === undefined
+            ) {
+                delete cleanedData[key];
+            }
+        });
+
+        return cleanedData;
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true);
-
-        // Ajout du matricule avant l'envoi
-        const dataToSubmit = { ...conduiteTenirData, matricule: id };
-
-        // Nettoyage des données
-        const cleanedData = cleanData(dataToSubmit);
-
-        try {
-            let response;
-
-            if (!isDataAvailable) {
-                // Création de nouvelles données
-                response = await apiServices.handleSubmit(
-                    e,
-                    cleanedData,
-                    "conduitetenirinitiale",
-                    setSuccessMessage,
-                    isDataAvailable,
-                    setIsDataAvailable,
-                    setIsEditable,
-                    setError,
-                    id
-                );
-            }
-
-            if (!response) {
-                throw new Error("Aucune réponse du serveur.");
-            }
-
-            if (response.status === 201 || response.status === 200) {
-                setSuccessMessage("Données soumises avec succès.");
-                toast.success("Données soumises avec succès.");
-                setIsDataAvailable(true);
-                setIsEditable(false);
-            } else {
-                setError(`Erreur lors de la soumission des données: ${response.status}`);
-                toast.error(`Erreur lors de la soumission des données: ${response.status}`);
-            }
-        } catch (err) {
-            setError(err.message || "Erreur inconnue lors de la soumission.");
-            toast.error(err.message || "Erreur inconnue lors de la soumission.");
-        } finally {
-            setLoading(false);
-        }
+        
+        // Clean the data before submission to remove empty strings
+        const cleanedData = cleanData(conduiteTenirData);
+        
+        apiServices.handleSubmit(
+            e,
+            cleanedData,
+            "conduitetenirinitiale",
+            setSuccessMessage,
+            isDataAvailable,
+            setIsDataAvailable,
+            setIsEditable,
+            setError,
+            id
+        );
     };
 
     useEffect(() => {
-        const loadData = async () => {
-            setIsEditable(false);
-            setLoading(true);
-            try {
-                const response = await apiServices.loadDossierDetails(
-                    setconduiteTenirData, // set data
-                    "conduitetenirinitiale", // apiname
+        console.log(idDossier, id);
+        apiServices.loadDossierDetails(
+            setconduiteTenirData,
+            "conduitetenirinitiale",
+            setIsDataAvailable,
+            setError,
+            id
+        );
+    }, [id, idDossier]);
+
+    // Approval function
+    const approveConduiteTenirInitiale = async () => {
+        try {
+            const response = await axios.put(
+                `/api/review/ConduiteTenirInitiale/${id}/approve`,
+                {},
+                { headers: authHeader() }
+            );
+            if (response.status === 200) {
+                setSuccessMessage('Section approved successfully');
+                // Refresh data to get updated approval status
+                const updatedResponse = await apiServices.loadDossierDetails(
+                    setconduiteTenirData,
+                    "conduitetenirinitiale",
                     setIsDataAvailable,
-                    setError,            // setError
-                    id                      // id
+                    setError,
+                    id
                 );
-
-                // Ensure 'matricule' is explicitly set when loading data
-                setconduiteTenirData((prevData) => ({
-                    ...prevData,
-                    ...response,  // Copy existing data
-                    matricule: id, //OVERRIDE (OR ADD IF MISSING) MATRICULE HERE
-                    patient: id
-                }));
-                setIsDataAvailable(true);
-            } catch (error) {
-                setError(error);
-                setIsDataAvailable(false);
-            } finally {
-                setLoading(false);
+                setconduiteTenirData(prev => ({ ...prev, ...updatedResponse, matricule: id, patient: id }));
             }
-        };
-
-        if (id) {
-setIsEditable(false) ;
-loadData();
+        } catch (error) {
+            console.error('Error approving section:', error);
+            setError('Failed to approve section');
         }
-    }, [id]);
-
+    };
 
     return (
         <ThemeProvider theme={theme}>
@@ -271,6 +277,14 @@ loadData();
                 <Typography variant="h4" gutterBottom>
                     Prise en charge à la phase aigue
                 </Typography>
+                
+                {error && (
+                    <Alert severity="warning" sx={{ mb: 2 }}>
+                        {error.includes('404') || error.includes('not found') 
+                            ? 'Aucune donnée trouvée pour ce patient. Vous pouvez créer un nouveau dossier en cliquant sur "Modifier".' 
+                            : error}
+                    </Alert>
+                )}
 
                 {/* Box I: Pharmacologique */}
                 <Box sx={{ mt: 2, p: 2, border: "1px solid #ccc", borderRadius: "8px" }}>
@@ -293,7 +307,7 @@ loadData();
                             onChange={handleChangeBool}
                             disabled={!isEditable}
                         >
-                            <FormControlLabel value="Oui" control={<Radio disabled={!isEditable} />}label="Oui" />
+                            <FormControlLabel value="Oui" control={<Radio disabled={!isEditable} />} label="Oui" />
                             <FormControlLabel value="Non" control={<Radio disabled={!isEditable} />} label="Non" />
                         </RadioGroup>
                     </Box>
@@ -337,7 +351,7 @@ loadData();
                                         onChange={handleChangeBool}
                                     >
                                         <FormControlLabel value="Oui" control={<Radio disabled={!isEditable} />} label="Oui" />
-                                        <FormControlLabel value="Non"control={<Radio disabled={!isEditable} />} label="Non" />
+                                        <FormControlLabel value="Non" control={<Radio disabled={!isEditable} />} label="Non" />
                                     </RadioGroup>
                                 </Box>
                             </Grid>
@@ -387,6 +401,7 @@ loadData();
                                         name="recentHypodensity"
                                         value={conduiteTenirData.recentHypodensity}
                                         onChange={handleChangeBool}
+                                        disabled={!isEditable}
                                     >
                                         <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                         <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -401,6 +416,7 @@ loadData();
                                         name="plaquettes"
                                         value={conduiteTenirData.plaquettes}
                                         onChange={handleChangeBool}
+                                        disabled={!isEditable}
                                     >
                                         <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                         <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -447,6 +463,7 @@ loadData();
                                         name="AITSansOcclusion"
                                         value={conduiteTenirData.AITSansOcclusion }
                                         onChange={handleChangeBool}
+                                        disabled={!isEditable}
                                     >
                                         <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                         <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -458,7 +475,7 @@ loadData();
                                     <Typography sx={{ mr: 2 }}>Déficit mineur sans occlusion proximale </Typography>
                                     <RadioGroup
                                         row
-                                        name="DéficitMineurSansOcclusion"
+                                        name="DeficitMineurSansOcclusion"
                                         value={conduiteTenirData.DeficitMineurSansOcclusion}
                                         onChange={handleChangeBool}
                                         disabled={!isEditable}
@@ -493,6 +510,7 @@ loadData();
                                         name="HemorragieRecente"
                                         value={conduiteTenirData.HemorragieRecente}
                                         onChange={handleChangeBool}
+                                        disabled={!isEditable}
                                     >
                                         <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                         <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -572,6 +590,7 @@ loadData();
                                             name="ThromboAspiration"
                                             value={conduiteTenirData.ThromboAspiration}
                                             onChange={handleChangeBool}
+                                            disabled={!isEditable}
                                         >
                                             <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                             <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -657,6 +676,7 @@ loadData();
                                             name="HBPM"
                                             value={conduiteTenirData.HBPM}
                                             onChange={handleChangeBool}
+                                            disabled={!isEditable}
                                         >
                                             <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                             <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -672,6 +692,7 @@ loadData();
                                             name="AOD"
                                             value={conduiteTenirData.AOD}
                                             onChange={handleChangeBool}
+                                            disabled={!isEditable}
                                         >
                                             <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                             <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -703,6 +724,7 @@ loadData();
                                 name="SimpleAntiAgregationPlaquettaire"
                                 value={conduiteTenirData.SimpleAntiAgregationPlaquettaire}
                                 onChange={handleChangeBool}
+                                disabled={!isEditable}
                             >
                                 <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                 <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -715,6 +737,7 @@ loadData();
                                     name="SimpleAntiAgregationPlaquettaireType"
                                     value={conduiteTenirData.SimpleAntiAgregationPlaquettaireType}
                                     onChange={handleChange}
+                                    disabled={!isEditable}
                                 >
                                     <MenuItem value="Aspegic">Aspegic</MenuItem>
                                     <MenuItem value="Clopidogrel">Clopidogrel</MenuItem>
@@ -729,6 +752,7 @@ loadData();
                                 name="DoubleAntiAgregationPlaquettaire"
                                 value={conduiteTenirData.DoubleAntiAgregationPlaquettaire}
                                 onChange={handleChangeBool}
+                                disabled={!isEditable}
                             >
                                 <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                 <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -744,6 +768,7 @@ loadData();
                                     name="DoubleAntiAgregationPlaquettaireDose"
                                     value={conduiteTenirData.DoubleAntiAgregationPlaquettaireDose}
                                     onChange={handleChangeBool}
+                                    disabled={!isEditable}
                                 >
                                     <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                     <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -777,6 +802,7 @@ loadData();
                                         name="DoubleAntiAgregationPlaquettaireType"
                                         value={conduiteTenirData.DoubleAntiAgregationPlaquettaireType}
                                         onChange={handleChange}
+                                        disabled={!isEditable}
                                     >
                                         <MenuItem value="Clopidogrel">Clopidogrel</MenuItem>
                                         <MenuItem value="Ticagrelor">Ticagrelor</MenuItem>
@@ -795,6 +821,7 @@ loadData();
                             name="TraitementAntihypertenseur"
                             value={conduiteTenirData.TraitementAntihypertenseur}
                             onChange={handleChangeBool}
+                            disabled={!isEditable}
                         >
                             <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                             <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -822,6 +849,7 @@ loadData();
                                                 name="Nicardipine"
                                                 value={conduiteTenirData.Nicardipine}
                                                 onChange={handleChangeBool}
+                                                disabled={!isEditable}
                                             >
                                                 <FormControlLabel value="Oui"  control={<Radio disabled={!isEditable} />} label="Oui" />
                                                 <FormControlLabel value="Non"  control={<Radio disabled={!isEditable} />} label="Non" />
@@ -859,10 +887,10 @@ loadData();
                                                 <TextField
                                                     label="Type"
                                                     variant="outlined"
-
                                                     name="TraitementParVoieOraleType"
                                                     value={conduiteTenirData.TraitementParVoieOraleType}
                                                     onChange={handleChange}
+                                                    disabled={!isEditable}
                                                 />
                                             </Box>
                                         </>
@@ -1014,14 +1042,31 @@ loadData();
                     </SubSection>
                 </Box>
 
-
-                <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
-
+                <SubmitButtons 
+                    handleSubmit={handleSubmit}
+                    isDataAvailable={isDataAvailable} 
+                    setIsEditable={setIsEditable} 
+                    isEditable={isEditable} 
+                    onSubmitComment={handleAddCommentSafe}
+                    mode={mode}
+                    onApprove={approveConduiteTenirInitiale}
+                    tabName={tabName}
+                />
 
                 {successMessage && (
                     <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
                 )}
             </form>
+
+            {/* Comments Section - Completely separate from form */}
+            {isAuthenticated() && (
+                <SectionCommentaires
+                    comments={comments}
+                    onEditComment={editComment}
+                    onDeleteComment={deleteComment}
+                    loading={commentsLoading}
+                />
+            )}
         </ThemeProvider>
     );
 }

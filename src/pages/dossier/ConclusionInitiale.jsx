@@ -17,9 +17,12 @@ import {
 import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import authHeader from "../../services/auth-header";
 
 
-export default function ConclusionInitiale({mode = "Edit"}) {
+export default function ConclusionInitiale({mode = "Edit", tabName}) {
   const theme = createTheme({
     palette: {
       primary: {
@@ -50,12 +53,40 @@ export default function ConclusionInitiale({mode = "Edit"}) {
     Conclusion:"",
   });
 
+  // Comments functionality - separate from form data
+  const {
+    comments,
+    addComment,
+    editComment,
+    deleteComment,
+    loading: commentsLoading
+  } = useComments('ConclusionInitiale', id, null); // No refresh callback to avoid form interference
 
+  // Separate comment handler that doesn't trigger form validation
+  const handleAddCommentSafe = async (message) => {
+    try {
+      await addComment(message);
+      // Don't refresh form data, only comments
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      setError('Failed to add comment');
+    }
+  };
 
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return user && user.accessToken;
+  };
 
-  
+  const ApproveConclusionInitiale = () => {
+    axios.put(
+      `http://localhost:3000/api/review/${tabName}/${ConclusionInitialeData?._id || ""}/reviewInfo/state`,
+      { status: "Accepté" },
+      { headers: authHeader() }
+    );
+  };
 
-   
   const handleChange2 = (e) => {
     const { name, value } = e.target;
     
@@ -75,8 +106,12 @@ export default function ConclusionInitiale({mode = "Edit"}) {
 
 
 
+   function loadConclusionInitialeDetails() {
+    apiServices.loadDossierDetails(setConclusionInitialeData,"conclusioninitiale",setIsDataAvailable,setError,id);
+   }
+
    useEffect(() => {
-    apiServices.loadDossierDetails(setConclusionInitialeData,"conclusioninitiale",setIsDataAvailable,setError,id)
+    loadConclusionInitialeDetails();
   }, []);
 
 
@@ -131,16 +166,32 @@ export default function ConclusionInitiale({mode = "Edit"}) {
           </Box>       
 
 
-          <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
+          <SubmitButtons 
+            handleSubmit={handleSubmit}
+            isDataAvailable={isDataAvailable} 
+            setIsEditable={setIsEditable} 
+            isEditable={isEditable} 
+            onSubmitComment={handleAddCommentSafe}
+            mode={mode}
+            onApprove={ApproveConclusionInitiale}
+            tabName={tabName}
+          />
 
 {successMessage && (
   <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
   )}
 
-
-
-
           </form>
+
+          {/* Comments Section - Completely separate from form */}
+          {isAuthenticated() && (
+            <SectionCommentaires
+              comments={comments}
+              onEditComment={editComment}
+              onDeleteComment={deleteComment}
+              loading={commentsLoading}
+            />
+          )}
 
           </ThemeProvider>
 

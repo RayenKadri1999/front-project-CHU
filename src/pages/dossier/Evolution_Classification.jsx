@@ -16,8 +16,12 @@ import {
 import Notifications from "../../components/shared/Notifications";
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import axios from "axios";
+import authHeader from "../../services/auth-header";
 
-export default function EvolutionClassification({ mode = "Edit" }) {
+export default function EvolutionClassification({ mode = "Edit", tabName }) {
     const { idDossier, id } = useParams();
     const theme = createTheme({
         palette: {
@@ -47,6 +51,33 @@ export default function EvolutionClassification({ mode = "Edit" }) {
         Escarre: "",
         matricule: id,
     });
+
+    // Comments functionality - separate from form data
+    const {
+        comments,
+        addComment,
+        editComment,
+        deleteComment,
+        loading: commentsLoading
+    } = useComments('EvolutionClassification', id, null); // No refresh callback to avoid form interference
+
+    // Separate comment handler that doesn't trigger form validation
+    const handleAddCommentSafe = async (message) => {
+        try {
+            await addComment(message);
+            // Don't refresh form data, only comments
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            setError('Failed to add comment');
+        }
+    };
+
+    // Check if user is authenticated
+    const isAuthenticated = () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        return user && user.accessToken;
+    };
+
     const cleanData = (data) => {
         // Create a new object to avoid mutating the original one
         let cleanedData = { ...data };
@@ -127,6 +158,25 @@ export default function EvolutionClassification({ mode = "Edit" }) {
             id
         );
     }, [id]);
+
+    // Approval function
+    const approveEvolutionClassification = async () => {
+        try {
+            const response = await axios.put(
+                `/api/review/EvolutionClassification/${id}/approve`,
+                {},
+                { headers: authHeader() }
+            );
+            if (response.status === 200) {
+                setSuccessMessage('Section approved successfully');
+                // Refresh data to get updated approval status
+                apiServices.loadDossierDetails(setEvolutionClassificationData, "evolutionclassification", setIsDataAvailable, setError, id);
+            }
+        } catch (error) {
+            console.error('Error approving section:', error);
+            setError('Failed to approve section');
+        }
+    };
 
     return (
         <ThemeProvider theme={theme}>
@@ -252,18 +302,31 @@ export default function EvolutionClassification({ mode = "Edit" }) {
                                     />
                                 </Box>
 
-
                         <SubmitButtons
+                            handleSubmit={handleSubmit}
                             isDataAvailable={isDataAvailable}
                             setIsEditable={setIsEditable}
                             isEditable={isEditable}
+                            onSubmitComment={handleAddCommentSafe}
                             mode={mode}
+                            onApprove={approveEvolutionClassification}
+                            tabName={tabName}
                         />
 
                         {successMessage && (
                             <Notifications Message={successMessage} setMessage={setSuccessMessage} />
                         )}
                     </form>
+
+                    {/* Comments Section - Completely separate from form */}
+                    {isAuthenticated() && (
+                        <SectionCommentaires
+                            comments={comments}
+                            onEditComment={editComment}
+                            onDeleteComment={deleteComment}
+                            loading={commentsLoading}
+                        />
+                    )}
                 </Box>
             </Box>
         </ThemeProvider>

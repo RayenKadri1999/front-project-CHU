@@ -16,8 +16,12 @@ import { Checkbox, FormControlLabel, FormGroup, FormLabel, Grid, Radio, RadioGro
 import SubmitButtons from "../../components/shared/SubmitButtons";
 import Notifications from "../../components/shared/Notifications";
 import apiServices from "../../services/api-services";
+import { useComments } from "../../hooks/useComments";
+import SectionCommentaires from "./sectionCommentaires";
+import axios from "axios";
+import authHeader from "../../services/auth-header";
 
-export default function ExamensComplementaires({ mode = "Edit" }) {
+export default function ExamensComplementaires({ mode = "Edit", tabName }) {
  
    const { idDossier,id} = useParams();
   const theme = createTheme({
@@ -61,7 +65,34 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
       
      
   });
-    const cleanData = (data) => {
+
+  // Comments functionality - separate from form data
+  const {
+      comments,
+      addComment,
+      editComment,
+      deleteComment,
+      loading: commentsLoading
+  } = useComments('ExamensComplementaires', id, null); // No refresh callback to avoid form interference
+
+  // Separate comment handler that doesn't trigger form validation
+  const handleAddCommentSafe = async (message) => {
+      try {
+          await addComment(message);
+          // Don't refresh form data, only comments
+      } catch (error) {
+          console.error('Error adding comment:', error);
+          setError('Failed to add comment');
+      }
+  };
+
+  // Check if user is authenticated
+  const isAuthenticated = () => {
+      const user = JSON.parse(localStorage.getItem('user'));
+      return user && user.accessToken;
+  };
+
+  const cleanData = (data) => {
         // Create a new object to avoid mutating the original one
         let cleanedData = { ...data };
         delete cleanedData._id;
@@ -128,6 +159,25 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
      
       }, []);
 
+  // Approval function
+  const approveExamensComplementaires = async () => {
+      try {
+          const response = await axios.put(
+              `/api/review/ExamensComplementaires/${id}/approve`,
+              {},
+              { headers: authHeader() }
+          );
+          if (response.status === 200) {
+              setSuccessMessage('Section approved successfully');
+              // Refresh data to get updated approval status
+              apiServices.loadDossierDetails(setExamensComplementairesData, "examenscomplementaires", setIsDataAvailable, setError, id);
+          }
+      } catch (error) {
+          console.error('Error approving section:', error);
+          setError('Failed to approve section');
+      }
+  };
+
   return (
 <>
 
@@ -138,7 +188,13 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
       <form onSubmit={handleSubmit}>
-      {error && <Alert severity="info">{error}</Alert>}
+      {error && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          {error.includes('404') || error.includes('not found') 
+            ? 'Aucune donnée trouvée pour ce patient. Vous pouvez créer un nouveau dossier en cliquant sur "Modifier".' 
+            : error}
+        </Alert>
+      )}
     
       
     
@@ -241,7 +297,7 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
                   {<Checkbox 
                     name="Arteriographie"
                     disabled={!isEditable}
-                    checked={examensComplementairesData.Artériographie}
+                    checked={examensComplementairesData.Arteriographie}
                     onChange={handleChangecheck}
                     inputProps={{ 'aria-label': 'controlled' }}
                     />
@@ -249,8 +305,8 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
                label="Artériographie" />
                 
                <TextField  
-                  disabled={!isEditable || !examensComplementairesData.Arteriographie }
-                     name="DescAngiographie"
+                  disabled={!isEditable || !examensComplementairesData.Arteriographie}
+                     name="DescArteriographie"
                   value={examensComplementairesData.DescArteriographie}
                   onChange={handleChangeText}
                   multiline
@@ -391,8 +447,16 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
       
 
   
-     
-        <SubmitButtons isDataAvailable={isDataAvailable} setIsEditable={setIsEditable} isEditable={isEditable} mode={mode}/>
+        <SubmitButtons 
+            handleSubmit={handleSubmit}
+            isDataAvailable={isDataAvailable} 
+            setIsEditable={setIsEditable} 
+            isEditable={isEditable} 
+            onSubmitComment={handleAddCommentSafe}
+            mode={mode}
+            onApprove={approveExamensComplementaires}
+            tabName={tabName}
+        />
 
 {successMessage && (
   <Notifications Message={successMessage} setMessage={setSuccessMessage}/>
@@ -402,6 +466,16 @@ export default function ExamensComplementaires({ mode = "Edit" }) {
              
       
       </form>
+
+      {/* Comments Section - Completely separate from form */}
+      {isAuthenticated() && (
+          <SectionCommentaires
+              comments={comments}
+              onEditComment={editComment}
+              onDeleteComment={deleteComment}
+              loading={commentsLoading}
+          />
+      )}
       </Box>
       </Box>
       </ThemeProvider>

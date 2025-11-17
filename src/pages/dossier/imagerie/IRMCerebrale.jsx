@@ -279,7 +279,13 @@ const IRM = ({
                             borderRadius: "8px",
                         }}
                     >
-                        {error && <Alert severity="info">{error}</Alert>}
+                        {error && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                {error.includes('404') || error.includes('not found') 
+                                    ? 'Aucune donnée trouvée pour ce patient. Vous pouvez créer un nouveau dossier en cliquant sur "Modifier".' 
+                                    : error}
+                            </Alert>
+                        )}
                         {IRMData.status === "Oui" && (
                             <>
                                 <Box

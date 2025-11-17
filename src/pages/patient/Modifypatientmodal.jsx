@@ -12,7 +12,8 @@ import SubmitButtons from "../../components/shared/SubmitButtons";
 
 
 
-const DetailsPatientForm = ({handleClose,setSuccessMessage,idDossier, mode = "Edit"}) => {
+const DetailsPatientForm = (props) => {
+  const { handleClose, setSuccessMessage, idDossier, mode = "Edit" } = props;
   const [patientData, setPatientData] = useState({
     Nom: "",
     Prenom: "",
